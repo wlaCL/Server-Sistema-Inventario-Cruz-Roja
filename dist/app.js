@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var dotenv_1 = __importDefault(require("dotenv"));
-var server_1 = __importDefault(require("./models/server"));
+var server_model_1 = __importDefault(require("./models/server.model"));
 //configurar dot.env
 dotenv_1.default.config();
-var server = new server_1.default();
+var server = new server_model_1.default();
 server.listen();
 //# sourceMappingURL=app.js.map
