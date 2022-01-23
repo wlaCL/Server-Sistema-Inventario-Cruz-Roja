@@ -74,7 +74,7 @@ var existeAmbulanciaNumVehiculo = function (num_vehiculo) {
                 case 1:
                     ambulancia = _a.sent();
                     if (ambulancia) {
-                        throw new Error("Ya existe un vehiculo con el número de vehículo ingresado");
+                        throw new Error("Ya existe una ambulancia con el número de vehículo ingresado");
                     }
                     return [2 /*return*/];
             }

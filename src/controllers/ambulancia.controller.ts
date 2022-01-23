@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Op } from "sequelize";
-import {Ambulancia} from '../models/index.model';
+import {Ambulancia} from '../models/models';
 import GenericError from "../models/errors/error";
 
 
@@ -17,6 +17,7 @@ export const postAmbulancia = async(req:Request, res:Response) =>{
        
         if(ambulancia){
             return res.status(400).json({
+                ok: true,
                 msg:"Ambulancia registrada exitósamente", 
                 ambulancia
             });
@@ -50,6 +51,7 @@ export const eliminarAmbulancia = async(req:Request, res:Response) =>{
         });
 
        res.status(200).json({
+           ok: true,
            msg: "Eliminación exitósa",
            ambulancia
        })
@@ -67,12 +69,14 @@ export const eliminarAmbulancia = async(req:Request, res:Response) =>{
 // actulizar ambulancia 
 export const actualizarAmbulancia = async(req:Request, res: Response) =>{    
     const {placa} = req.params; 
-    const {descripcion, num_vehiculo} = req.body; 
+    const {descripcion = "", num_vehiculo = ""} = req.body; 
     
     try{
+        const amb:any = await Ambulancia.findByPk(placa);
+
         const ambulancia = await Ambulancia.update(
             {
-                descripcion, 
+                descripcion: (descripcion != "")? descripcion: amb.descripcion, 
                 num_vehiculo
             },{
                 where:{
@@ -82,6 +86,7 @@ export const actualizarAmbulancia = async(req:Request, res: Response) =>{
         );
     
         res.status(200).json({
+            ok:true,
             msg: "Actualización de datos de ambulancia", 
             ambulancia
         });
@@ -127,6 +132,7 @@ export const obtenerAmbulancia=async (req:Request, res:Response) => {
             })
         }
         res.status(200).json({
+            ok:true,
             msg:"Búsqueda éxitosa", 
             ambulancia
         });
@@ -137,4 +143,35 @@ export const obtenerAmbulancia=async (req:Request, res:Response) => {
             errors: "Ha ocurrido un error contactate con el administrador"
         })
     }   
+}
+
+export const obtenerAmbulancias = async (req: Request, resp: Response)=>{
+    try{
+        const ambulancias:any =await Ambulancia.findAll({
+            where:{
+                estado: true
+            }
+        });
+
+        if(ambulancias.length == 0 ){
+            return resp.status(400).json({
+                ok: false, 
+                msg: "No se han econtrado resultados",
+                ambulancias :[]
+            });
+        }
+
+        resp.status(200).json({
+            ok: true, 
+            msg: "Resultados encontrados", 
+            ambulancias
+        });
+
+    }catch(error){
+        console.log(error); 
+        resp.status(500).json({
+            ok: false, 
+            msg: "Ha ocurrido un error contáctate con el administrador"
+        })
+    }    
 }

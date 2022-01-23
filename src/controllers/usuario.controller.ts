@@ -1,47 +1,49 @@
 import { Request, Response, NextFunction } from 'express';
+import { Op } from 'sequelize';
 import {Usuario, Persona, Cuenta_Acceso} from "../associations/usuario.associations";
 import GenericError from '../models/errors/error';
 
 
 //crear usuario
 export const postUsuario = async(req:Request, res: Response) =>{
-    const {nombre="", apellido="",cedula="", rol = "", contrasena} = req.body;
+    const {nombre="", apellido="",cedula="", rol = "", contrasena =""} = req.body;
     let usuario:any; 
 
-    try{   
-        if(rol === ""){ 
-            const persona = await Persona.create({
-                cedula, 
-                nombre, 
-                apellido, 
-            });
-            return res.status(201).json({
-                msg: "Personal registrado exitósamente", 
-                persona
-            });
-        }
-
+    try{ 
         const persona  = await Persona.create({
             cedula, 
             nombre, 
             apellido
         });
 
-        usuario = await Usuario.create({
-            cedula, 
-            roles_sistema: rol
-        });
-    
-        await Cuenta_Acceso.create({
-            id_usuario: usuario.id_usuario, 
-            contrasena
-        });
-           
-        res.status(201).json({
+        if(rol != "" && contrasena != ""){
+           return res.status(201).json({
+                ok:true,
+                msg:"Personal registrado exitosamente",
+                usuario:persona
+            });            
+        }
+
+        if(rol != "") {
+            usuario = await Usuario.create({
+                cedula, 
+                roles_sistema: rol
+            });
+        }        
+        
+        if(contrasena != ""){
+            await Cuenta_Acceso.create({
+                id_usuario: usuario.id_usuario, 
+                contrasena
+            });
+        }
+        
+        return res.status(201).json({
             ok:true,
             msg:"Usuario registrado exitosamente",
             usuario:persona
-        })
+        });   
+      
        
     }catch(error){
         
@@ -257,10 +259,6 @@ export const getUsuario =async (req:Request, res:Response) => {
         const {cedula} = req.params; 
 
         const usuario = await Persona.findByPk(cedula, {
-            include:{
-                model: Usuario, 
-                attributes:['roles_sistema']
-            }, 
             attributes:["cedula", "nombre", "apellido","estado"],             
             }, 
             
@@ -275,4 +273,53 @@ export const getUsuario =async (req:Request, res:Response) => {
         }); 
                
     }   
+}
+
+export const getUsuarios = async (req:Request, res:Response) =>{
+    const {nombre = "", apellido = ""} = req.body;
+  
+
+    try{
+        const personas = await Persona.findAll({
+            where:{
+                [Op.or]:{
+                    nombre:{
+                        [Op.or]:{
+                         [Op.startsWith]: nombre,
+                         [Op.substring]: nombre,
+                         [Op.endsWith]: nombre
+                        }                  
+                    }, 
+                    apellido:{
+                     [Op.or]:{
+                         [Op.startsWith]: apellido,
+                         [Op.substring]: apellido,
+                         [Op.endsWith]: apellido
+                          }                
+                    }
+                },        
+            }
+        }); 
+     
+        if(personas.length == 0){
+            return res.status(400).json({
+                ok: false, 
+                msg: 'No se encontraron registros', 
+                personas: []
+            });
+        }
+     
+        res.status(200).json({
+            ok: true, 
+            msg: 'Búsqueda exitosa', 
+            personas
+        });
+
+    }catch(error){
+        console.log(error); 
+        res.status(500).json({
+            ok: false, 
+            msg: "Ha ocurrido un error contáctate con el administrador",
+        });
+    }
 }

@@ -39,9 +39,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.obtenerAmbulancia = exports.actualizarAmbulancia = exports.eliminarAmbulancia = exports.postAmbulancia = void 0;
+exports.obtenerAmbulancias = exports.obtenerAmbulancia = exports.actualizarAmbulancia = exports.eliminarAmbulancia = exports.postAmbulancia = void 0;
 var sequelize_1 = require("sequelize");
-var index_model_1 = require("../models/index.model");
+var models_1 = require("../models/models");
 var error_1 = __importDefault(require("../models/errors/error"));
 //crear ambulancia
 var postAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -51,7 +51,7 @@ var postAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void
             case 0:
                 _b.trys.push([0, 2, , 3]);
                 _a = req.body, placa = _a.placa, num_vehiculo = _a.num_vehiculo, descripcion = _a.descripcion;
-                return [4 /*yield*/, index_model_1.Ambulancia.create({
+                return [4 /*yield*/, models_1.Ambulancia.create({
                         placa: placa,
                         num_vehiculo: num_vehiculo,
                         descripcion: descripcion,
@@ -60,6 +60,7 @@ var postAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void
                 ambulancia = _b.sent();
                 if (ambulancia) {
                     return [2 /*return*/, res.status(400).json({
+                            ok: true,
                             msg: "Ambulancia registrada exitósamente",
                             ambulancia: ambulancia
                         })];
@@ -94,7 +95,7 @@ var eliminarAmbulancia = function (req, res) { return __awaiter(void 0, void 0, 
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 placa = req.params.placa;
-                return [4 /*yield*/, index_model_1.Ambulancia.update({ estado: false }, {
+                return [4 /*yield*/, models_1.Ambulancia.update({ estado: false }, {
                         where: {
                             placa: placa,
                             estado: true
@@ -103,6 +104,7 @@ var eliminarAmbulancia = function (req, res) { return __awaiter(void 0, void 0, 
             case 1:
                 ambulancia = _a.sent();
                 res.status(200).json({
+                    ok: true,
                     msg: "Eliminación exitósa",
                     ambulancia: ambulancia
                 });
@@ -121,32 +123,36 @@ var eliminarAmbulancia = function (req, res) { return __awaiter(void 0, void 0, 
 exports.eliminarAmbulancia = eliminarAmbulancia;
 // actulizar ambulancia 
 var actualizarAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var placa, _a, descripcion, num_vehiculo, ambulancia, error_4, name_2, errors, obj;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var placa, _a, _b, descripcion, _c, num_vehiculo, amb, ambulancia, error_4, name_2, errors, obj;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
                 placa = req.params.placa;
-                _a = req.body, descripcion = _a.descripcion, num_vehiculo = _a.num_vehiculo;
-                _b.label = 1;
+                _a = req.body, _b = _a.descripcion, descripcion = _b === void 0 ? "" : _b, _c = _a.num_vehiculo, num_vehiculo = _c === void 0 ? "" : _c;
+                _d.label = 1;
             case 1:
-                _b.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, index_model_1.Ambulancia.update({
-                        descripcion: descripcion,
+                _d.trys.push([1, 4, , 5]);
+                return [4 /*yield*/, models_1.Ambulancia.findByPk(placa)];
+            case 2:
+                amb = _d.sent();
+                return [4 /*yield*/, models_1.Ambulancia.update({
+                        descripcion: (descripcion != "") ? descripcion : amb.descripcion,
                         num_vehiculo: num_vehiculo
                     }, {
                         where: {
                             placa: placa
                         }
                     })];
-            case 2:
-                ambulancia = _b.sent();
+            case 3:
+                ambulancia = _d.sent();
                 res.status(200).json({
+                    ok: true,
                     msg: "Actualización de datos de ambulancia",
                     ambulancia: ambulancia
                 });
-                return [3 /*break*/, 4];
-            case 3:
-                error_4 = _b.sent();
+                return [3 /*break*/, 5];
+            case 4:
+                error_4 = _d.sent();
                 console.log(error_4);
                 name_2 = error_4.name, errors = error_4.errors;
                 if (name_2 === "SequelizeValidationError") {
@@ -160,8 +166,8 @@ var actualizarAmbulancia = function (req, res) { return __awaiter(void 0, void 0
                         errors: "Ha ocurrido un error contáctate con el administrador"
                     });
                 }
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
@@ -177,7 +183,7 @@ var obtenerAmbulancia = function (req, res) { return __awaiter(void 0, void 0, v
                 _c.label = 1;
             case 1:
                 _c.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, index_model_1.Ambulancia.findOne({
+                return [4 /*yield*/, models_1.Ambulancia.findOne({
                         where: (_a = {},
                             _a[sequelize_1.Op.and] = (_b = {},
                                 _b[sequelize_1.Op.or] = {
@@ -198,6 +204,7 @@ var obtenerAmbulancia = function (req, res) { return __awaiter(void 0, void 0, v
                         })];
                 }
                 res.status(200).json({
+                    ok: true,
                     msg: "Búsqueda éxitosa",
                     ambulancia: ambulancia
                 });
@@ -214,4 +221,43 @@ var obtenerAmbulancia = function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.obtenerAmbulancia = obtenerAmbulancia;
+var obtenerAmbulancias = function (req, resp) { return __awaiter(void 0, void 0, void 0, function () {
+    var ambulancias, error_6;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, models_1.Ambulancia.findAll({
+                        where: {
+                            estado: true
+                        }
+                    })];
+            case 1:
+                ambulancias = _a.sent();
+                if (ambulancias.length == 0) {
+                    return [2 /*return*/, resp.status(400).json({
+                            ok: false,
+                            msg: "No se han econtrado resultados",
+                            ambulancias: []
+                        })];
+                }
+                resp.status(200).json({
+                    ok: true,
+                    msg: "Resultados encontrados",
+                    ambulancias: ambulancias
+                });
+                return [3 /*break*/, 3];
+            case 2:
+                error_6 = _a.sent();
+                console.log(error_6);
+                resp.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.obtenerAmbulancias = obtenerAmbulancias;
 //# sourceMappingURL=ambulancia.controller.js.map

@@ -5,3 +5,5 @@ export const postInventario = async(req:Request, res:Response) =>{
         msg: "soy el post inventario"
     })
 }
+
+

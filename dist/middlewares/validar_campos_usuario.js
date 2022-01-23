@@ -39,51 +39,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AlmenosUnCampo = exports.tamanoContrasena = exports.contrasenaValida = exports.rolValido = void 0;
+exports.validarCedula = exports.AlmenosUnCampo = exports.tamanoContrasena = void 0;
 var error_1 = __importDefault(require("../models/errors/error"));
-//validar que se envie un rol valido 
-var rolValido = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var roles_validos, _a, rol, obj;
-    return __generator(this, function (_b) {
-        roles_validos = ['user_web', 'user_app'];
-        _a = req.body.rol, rol = _a === void 0 ? "" : _a;
-        if (rol != "") {
-            if (!roles_validos.includes(rol)) {
-                obj = new error_1.default(rol, "Rol no válido : [user_web, user_app]");
-                return [2 /*return*/, res.status(422).json({
-                        errors: obj.ErrorObjt
-                    })];
-            }
-        }
-        next();
-        return [2 /*return*/];
-    });
-}); };
-exports.rolValido = rolValido;
-//validar que se envie una contraseña valida
-var contrasenaValida = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, contrasena, _c, rol, obj, obj;
-    return __generator(this, function (_d) {
-        _a = req.body, _b = _a.contrasena, contrasena = _b === void 0 ? "" : _b, _c = _a.rol, rol = _c === void 0 ? "" : _c;
-        if (rol != "") {
-            if (contrasena == "") {
-                obj = new error_1.default(contrasena, "Es necesario el campo contrasena");
-                return [2 /*return*/, res.status(422).json({
-                        errors: obj.ErrorObjt
-                    })];
-            }
-            if (contrasena.length < 10) {
-                obj = new error_1.default(contrasena, "La contraseña debe al menos tener 10 caracteres");
-                return [2 /*return*/, res.status(422).json({
-                        errors: obj.ErrorObj
-                    })];
-            }
-        }
-        next();
-        return [2 /*return*/];
-    });
-}); };
-exports.contrasenaValida = contrasenaValida;
 var tamanoContrasena = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, contrasena, obj;
     return __generator(this, function (_b) {
@@ -116,4 +73,12 @@ var AlmenosUnCampo = function (req, res, next) { return __awaiter(void 0, void 0
     });
 }); };
 exports.AlmenosUnCampo = AlmenosUnCampo;
+var validarCedula = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cedula;
+    return __generator(this, function (_a) {
+        cedula = req.body.cedula;
+        return [2 /*return*/];
+    });
+}); };
+exports.validarCedula = validarCedula;
 //# sourceMappingURL=validar_campos_usuario.js.map

@@ -138,7 +138,7 @@ var getCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
 }); };
 exports.getCategoria = getCategoria;
 var postCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, nombre, descripcion, error_4, name_1, errors, obj;
+    var _a, nombre, descripcion, categoria, error_4, name_1, errors, obj;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -151,9 +151,11 @@ var postCategoria = function (req, res) { return __awaiter(void 0, void 0, void 
                         descripcion: descripcion
                     })];
             case 2:
-                _b.sent();
+                categoria = _b.sent();
                 res.status(201).json({
+                    ok: true,
                     msg: "Categoría de creada exitósamente",
+                    categoria: categoria
                 });
                 return [3 /*break*/, 4];
             case 3:
@@ -205,7 +207,9 @@ var putCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
             case 3:
                 _e.sent();
                 res.status(200).json({
-                    msg: "Actualizacion exitosa"
+                    ok: true,
+                    msg: "Actualizacion exitosa",
+                    categoria: categoria
                 });
                 return [3 /*break*/, 5];
             case 4:
@@ -231,33 +235,42 @@ var putCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
 exports.putCategoria = putCategoria;
 //falta un estado para la eliminacipon 
 var deleteCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, error_6;
+    var _a, id, categoria, tproducto, error_6;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _a = req.params.id, id = _a === void 0 ? "" : _a;
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 4, , 5]);
                 return [4 /*yield*/, producto_associations_1.Categoria.update({
                         estado: false,
                     }, {
                         where: { id_categoria: id }
                     })];
             case 2:
-                _b.sent();
-                res.status(200).json({
-                    msg: "Eliminación exitosa"
-                });
-                return [3 /*break*/, 4];
+                categoria = _b.sent();
+                return [4 /*yield*/, producto_associations_1.TProducto.update({
+                        estado: false
+                    }, { where: {
+                            id_categoria: id
+                        } })];
             case 3:
+                tproducto = _b.sent();
+                res.status(200).json({
+                    ok: true,
+                    msg: "Eliminación exitosa",
+                    categoria: categoria
+                });
+                return [3 /*break*/, 5];
+            case 4:
                 error_6 = _b.sent();
                 console.log(error_6);
                 res.status(500).json({
                     errors: "Ha ocurrido un errror por favor contactate con el administrador"
                 });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };

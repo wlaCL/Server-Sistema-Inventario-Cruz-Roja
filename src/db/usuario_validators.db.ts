@@ -9,15 +9,25 @@ export const noExistePersona = async(cedula = "" )=>{
 
 export const existeUsuario = async (cedula = "") => {
   
-    const usuario = await Persona.findByPk(cedula); 
+    const usuario = await Persona.findOne({
+        where:{
+            cedula, 
+            estado:true
+        }
+    }); 
     if(!usuario){
         throw new Error(`Cedula no registrada`);
     }
 }
 
 export const usuarioActivo = async(cedula = "")=>{
-    const persona:any = await Persona.findByPk(cedula); 
-    if(persona.estado == false){
-        throw new Error("El usuario se encuentra inactivado")        
+    const persona:any = await Persona.findOne({
+        where:{
+            cedula, 
+            estado: false
+        }
+    }); 
+    if(persona){
+        throw new Error("El usuario se encuentra inactivo")        
     }
 }

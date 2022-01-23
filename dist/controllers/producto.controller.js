@@ -39,21 +39,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProductoAmbulancia = exports.putProductoAmbulancia = exports.postProductoAmbulancia = exports.deleteProductoCaducidad = exports.putProductoCaducidad = exports.postProductoCaducidad = exports.getProductos = exports.getProducto = exports.deleteProducto = exports.putProducto = exports.postProducto = void 0;
+exports.getProductos = exports.getProducto = exports.deleteProducto = exports.putProducto = exports.postProducto = void 0;
 var sequelize_1 = require("sequelize");
 var producto_associations_1 = require("../associations/producto.associations");
 var error_1 = __importDefault(require("../models/errors/error"));
 // TIPO DE PRODUCTO
 //crear producto
 var postProducto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id_categoria, nombre, _b, descripcion, can_minima, tipo, _c, medida, producto, _d, error_2, name_1, errors, obj;
-    return __generator(this, function (_e) {
-        switch (_e.label) {
+    var _a, id_categoria, nombre, _b, descripcion, can_minima, tipo, _c, medida, _d, cantidad, medidaProducto, producto, _e, error_2, name_1, errors, obj;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
             case 0:
-                _a = req.body, id_categoria = _a.id_categoria, nombre = _a.nombre, _b = _a.descripcion, descripcion = _b === void 0 ? "" : _b, can_minima = _a.can_minima, tipo = _a.tipo, _c = _a.medida, medida = _c === void 0 ? "" : _c;
-                _e.label = 1;
+                _a = req.body, id_categoria = _a.id_categoria, nombre = _a.nombre, _b = _a.descripcion, descripcion = _b === void 0 ? "" : _b, can_minima = _a.can_minima, tipo = _a.tipo, _c = _a.medida, medida = _c === void 0 ? "" : _c, _d = _a.cantidad, cantidad = _d === void 0 ? "" : _d;
+                _f.label = 1;
             case 1:
-                _e.trys.push([1, 9, , 10]);
+                _f.trys.push([1, 11, , 12]);
                 return [4 /*yield*/, producto_associations_1.TProducto.create({
                         id_categoria: id_categoria,
                         nombre: nombre,
@@ -62,38 +62,48 @@ var postProducto = function (req, res) { return __awaiter(void 0, void 0, void 0
                         tipo: tipo
                     })];
             case 2:
-                producto = _e.sent();
-                _d = medida;
-                switch (_d) {
-                    case "unidad": return [3 /*break*/, 3];
-                    case "caja": return [3 /*break*/, 5];
+                producto = _f.sent();
+                if (!(tipo == "Equipo")) return [3 /*break*/, 4];
+                return [4 /*yield*/, producto_associations_1.Producto.create({
+                        id_tipoprod: producto.id_tipoprod,
+                        cantidad: cantidad
+                    })];
+            case 3:
+                _f.sent();
+                _f.label = 4;
+            case 4:
+                if (!(tipo == "Insumo Medico")) return [3 /*break*/, 10];
+                _e = medida;
+                switch (_e) {
+                    case "unidad": return [3 /*break*/, 5];
+                    case "caja": return [3 /*break*/, 7];
                 }
-                return [3 /*break*/, 7];
-            case 3: return [4 /*yield*/, producto_associations_1.Unidad_Medida.create({
+                return [3 /*break*/, 9];
+            case 5: return [4 /*yield*/, producto_associations_1.Unidad_Medida.create({
                     id_tipoprod: producto.id_tipoprod,
                     unidad: true
                 })];
-            case 4:
-                _e.sent();
-                producto.dataValues.medida = "unidad";
-                return [3 /*break*/, 8];
-            case 5: return [4 /*yield*/, producto_associations_1.Unidad_Medida.create({
+            case 6:
+                medidaProducto = _f.sent();
+                return [3 /*break*/, 10];
+            case 7: return [4 /*yield*/, producto_associations_1.Unidad_Medida.create({
                     id_tipoprod: producto.id_tipoprod,
                     caja: true
                 })];
-            case 6:
-                _e.sent();
-                producto.dataValues.medida = "caja";
-                console.log("soye el producto", producto);
-                return [3 /*break*/, 8];
-            case 7: return [3 /*break*/, 8];
-            case 8: return [2 /*return*/, res.status(201).json({
+            case 8:
+                medidaProducto = _f.sent();
+                return [3 /*break*/, 10];
+            case 9: return [3 /*break*/, 10];
+            case 10: return [2 /*return*/, res.status(201).json({
                     ok: true,
                     msg: "Registro de producto exitoso",
-                    producto: producto
+                    producto: {
+                        producto: producto,
+                        medida: medidaProducto,
+                    }
                 })];
-            case 9:
-                error_2 = _e.sent();
+            case 11:
+                error_2 = _f.sent();
                 console.log(error_2);
                 name_1 = error_2.name, errors = error_2.errors;
                 if (name_1 === "SequelizeValidationError") {
@@ -107,44 +117,43 @@ var postProducto = function (req, res) { return __awaiter(void 0, void 0, void 0
                             errors: "Ha ocurrido un error contácte con el administrador"
                         })];
                 }
-                return [3 /*break*/, 10];
-            case 10: return [2 /*return*/];
+                return [3 /*break*/, 12];
+            case 12: return [2 /*return*/];
         }
     });
 }); };
 exports.postProducto = postProducto;
 //actualizar producto
 var putProducto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, _b, _c, nombre, _d, descripcion, _e, can_minima, _f, tipo, tipo_producto, producto, obj, error_3, name_2, errors, obj;
-    return __generator(this, function (_g) {
-        switch (_g.label) {
+    var _a, id, _b, _c, nombre, _d, descripcion, _e, can_minima, tipo_producto, producto, obj, error_3, name_2, errors, obj;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
             case 0:
                 _a = req.params.id, id = _a === void 0 ? "" : _a;
-                _b = req.body, _c = _b.nombre, nombre = _c === void 0 ? "" : _c, _d = _b.descripcion, descripcion = _d === void 0 ? "" : _d, _e = _b.can_minima, can_minima = _e === void 0 ? "" : _e, _f = _b.tipo, tipo = _f === void 0 ? "" : _f;
-                _g.label = 1;
+                _b = req.body, _c = _b.nombre, nombre = _c === void 0 ? "" : _c, _d = _b.descripcion, descripcion = _d === void 0 ? "" : _d, _e = _b.can_minima, can_minima = _e === void 0 ? "" : _e;
+                _f.label = 1;
             case 1:
-                _g.trys.push([1, 4, , 5]);
+                _f.trys.push([1, 4, , 5]);
                 return [4 /*yield*/, producto_associations_1.TProducto.findOne({
                         where: {
                             id_tipoprod: id
                         }
                     })];
             case 2:
-                tipo_producto = _g.sent();
+                tipo_producto = _f.sent();
                 return [4 /*yield*/, producto_associations_1.TProducto.update({
                         nombre: (nombre != "") ? nombre : tipo_producto.nombre,
                         descripcion: (descripcion != "") ? descripcion : tipo_producto.descripcion,
                         can_minima: (can_minima != "") ? can_minima : tipo_producto.can_minima,
-                        tipo: (tipo != "") ? tipo : tipo_producto.tipo
                     }, {
                         where: {
                             id_tipoprod: id
                         }
                     })];
             case 3:
-                producto = _g.sent();
+                producto = _f.sent();
                 if (producto[0] == 0) {
-                    obj = new error_1.default('', 'No se registraron cambios');
+                    obj = new error_1.default('id', 'No se encontraron registros para actualizar');
                     return [2 /*return*/, res.status(400).json({
                             errors: obj.ErrorObj
                         })];
@@ -156,7 +165,7 @@ var putProducto = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 });
                 return [3 /*break*/, 5];
             case 4:
-                error_3 = _g.sent();
+                error_3 = _f.sent();
                 console.log(error_3);
                 name_2 = error_3.name, errors = error_3.errors;
                 if (name_2 === "SequelizeValidationError") {
@@ -178,7 +187,7 @@ var putProducto = function (req, res) { return __awaiter(void 0, void 0, void 0,
 exports.putProducto = putProducto;
 //eliminar producto 
 var deleteProducto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, producto, obj, error_4;
+    var _a, id, producto, obj, productos, error_4;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -186,13 +195,13 @@ var deleteProducto = function (req, res) { return __awaiter(void 0, void 0, void
                 console.log(id);
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 4, , 5]);
                 return [4 /*yield*/, producto_associations_1.TProducto.update({
                         estado: false
                     }, {
                         where: {
                             id_tipoprod: id
-                        }
+                        },
                     })];
             case 2:
                 producto = _b.sent();
@@ -202,20 +211,35 @@ var deleteProducto = function (req, res) { return __awaiter(void 0, void 0, void
                             errors: obj.ErrorObj
                         })];
                 }
+                return [4 /*yield*/, producto_associations_1.Producto.update({
+                        disponibilidad: false
+                    }, {
+                        where: {
+                            id_tipoprod: id
+                        }
+                    })];
+            case 3:
+                productos = _b.sent();
+                if (!productos) {
+                    res.status(400).json({
+                        ok: false,
+                        msg: "No se pudo eliminar el producto"
+                    });
+                }
                 res.status(200).json({
                     ok: true,
                     msg: "Eliminacion exitosa",
                     producto: producto
                 });
-                return [3 /*break*/, 4];
-            case 3:
+                return [3 /*break*/, 5];
+            case 4:
                 error_4 = _b.sent();
                 console.log(error_4);
                 res.status(500).json({
                     errors: "Ha ocurrido un error contactate con el administrador"
                 });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
@@ -242,6 +266,7 @@ var getProducto = function (req, res) { return __awaiter(void 0, void 0, void 0,
                         })];
                 }
                 res.status(200).json({
+                    ok: true,
                     msg: "Búsqueda exitosa",
                     producto: producto
                 });
@@ -260,28 +285,32 @@ var getProducto = function (req, res) { return __awaiter(void 0, void 0, void 0,
 exports.getProducto = getProducto;
 //consultar productos  POR VERIFICAR
 var getProductos = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var termino, _a, rows, count, error_6;
-    var _b, _c;
-    return __generator(this, function (_d) {
-        switch (_d.label) {
+    var termino, _a, _b, inicio, _c, fin, _d, rows, count, error_6;
+    var _e, _f;
+    return __generator(this, function (_g) {
+        switch (_g.label) {
             case 0:
                 termino = req.params.termino;
-                _d.label = 1;
+                _a = req.query, _b = _a.inicio, inicio = _b === void 0 ? 0 : _b, _c = _a.fin, fin = _c === void 0 ? 3 : _c;
+                _g.label = 1;
             case 1:
-                _d.trys.push([1, 3, , 4]);
+                _g.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, producto_associations_1.TProducto.findAndCountAll({
                         where: {
-                            nombre: (_b = {},
-                                _b[sequelize_1.Op.or] = (_c = {},
-                                    _c[sequelize_1.Op.startsWith] = termino,
-                                    _c[sequelize_1.Op.endsWith] = termino,
-                                    _c[sequelize_1.Op.substring] = termino,
-                                    _c),
-                                _b)
-                        }
+                            nombre: (_e = {},
+                                _e[sequelize_1.Op.or] = (_f = {},
+                                    _f[sequelize_1.Op.startsWith] = termino,
+                                    _f[sequelize_1.Op.endsWith] = termino,
+                                    _f[sequelize_1.Op.substring] = termino,
+                                    _f),
+                                _e),
+                            estado: true
+                        },
+                        offset: Number(inicio),
+                        limit: Number(fin)
                     })];
             case 2:
-                _a = _d.sent(), rows = _a.rows, count = _a.count;
+                _d = _g.sent(), rows = _d.rows, count = _d.count;
                 console.log(rows, count);
                 if (rows == 0) {
                     return [2 /*return*/, res.status(404).json({
@@ -297,7 +326,12 @@ var getProductos = function (req, res) { return __awaiter(void 0, void 0, void 0
                 });
                 return [3 /*break*/, 4];
             case 3:
-                error_6 = _d.sent();
+                error_6 = _g.sent();
+                console.log(error_6);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contácte con el administrador",
+                });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -305,121 +339,4 @@ var getProductos = function (req, res) { return __awaiter(void 0, void 0, void 0
 }); };
 exports.getProductos = getProductos;
 // PRODUCTOS CON FECHA DE CADUCIDAD
-var postProductoCaducidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id_tipoprod, fecha_caducidad, cantidad, producto, error_7, name_3, errors, obj;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                _a = req.body, id_tipoprod = _a.id_tipoprod, fecha_caducidad = _a.fecha_caducidad, cantidad = _a.cantidad;
-                _b.label = 1;
-            case 1:
-                _b.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, producto_associations_1.Producto.create({
-                        id_tipoprod: id_tipoprod,
-                        fecha_caducidad: fecha_caducidad,
-                        cantidad: cantidad
-                    })];
-            case 2:
-                producto = _b.sent();
-                res.status(201).json({
-                    ok: true,
-                    msg: "Producto registrado exitósamente",
-                    producto: producto
-                });
-                return [3 /*break*/, 4];
-            case 3:
-                error_7 = _b.sent();
-                console.log(error_7);
-                name_3 = error_7.name, errors = error_7.errors;
-                if (name_3 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
-                        })];
-                }
-                else {
-                    return [2 /*return*/, res.status(500).json({
-                            errors: "Ha ocurrido un error contácte con el administrador"
-                        })];
-                }
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); };
-exports.postProductoCaducidad = postProductoCaducidad;
-var putProductoCaducidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, _b, cantidad, busqueda, producto, obj;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                _a = req.params, id = _a.id, _b = _a.cantidad, cantidad = _b === void 0 ? "" : _b;
-                return [4 /*yield*/, producto_associations_1.Producto.findOne({
-                        where: {
-                            producto: id
-                        }
-                    })];
-            case 1:
-                busqueda = _c.sent();
-                return [4 /*yield*/, producto_associations_1.Producto.update({
-                        cantidad: (cantidad != "") ? cantidad : cantidad
-                    }, {
-                        where: { id_producto: id }
-                    })];
-            case 2:
-                producto = _c.sent();
-                if (producto[0] == 0) {
-                    obj = new error_1.default('', 'No se registraron cambios');
-                    return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObj
-                        })];
-                }
-                res.status(200).json({
-                    ok: true,
-                    msg: "Actualiación exitósa",
-                    producto: producto
-                });
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.putProductoCaducidad = putProductoCaducidad;
-var deleteProductoCaducidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, producto;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                id = req.params.id;
-                return [4 /*yield*/, producto_associations_1.Producto.update({
-                        disponibilidad: false
-                    }, {
-                        where: {
-                            id_producto: id
-                        }
-                    })];
-            case 1:
-                producto = _a.sent();
-                res.status(200).json({
-                    ok: true,
-                    msg: "Eliminación exitósa",
-                    producto: producto
-                });
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.deleteProductoCaducidad = deleteProductoCaducidad;
-//PRODUCTOS ASIGNADOS A AMBULANCIAS
-var postProductoAmbulancia = function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/];
-}); }); };
-exports.postProductoAmbulancia = postProductoAmbulancia;
-var putProductoAmbulancia = function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/];
-}); }); };
-exports.putProductoAmbulancia = putProductoAmbulancia;
-var deleteProductoAmbulancia = function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/];
-}); }); };
-exports.deleteProductoAmbulancia = deleteProductoAmbulancia;
 //# sourceMappingURL=producto.controller.js.map

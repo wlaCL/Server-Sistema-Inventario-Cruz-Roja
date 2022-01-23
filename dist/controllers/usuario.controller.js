@@ -39,58 +39,58 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsuario = exports.actualizarUsuario = exports.deleteUsuario = exports.postUsuario = void 0;
+exports.getUsuarios = exports.getUsuario = exports.actualizarUsuario = exports.deleteUsuario = exports.postUsuario = void 0;
+var sequelize_1 = require("sequelize");
 var usuario_associations_1 = require("../associations/usuario.associations");
 var error_1 = __importDefault(require("../models/errors/error"));
 //crear usuario
 var postUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, nombre, _c, apellido, _d, cedula, _e, rol, contrasena, usuario, persona_1, persona, error_2, name_1, errors, obj;
-    return __generator(this, function (_f) {
-        switch (_f.label) {
+    var _a, _b, nombre, _c, apellido, _d, cedula, _e, rol, _f, contrasena, usuario, persona, error_2, name_1, errors, obj;
+    return __generator(this, function (_g) {
+        switch (_g.label) {
             case 0:
-                _a = req.body, _b = _a.nombre, nombre = _b === void 0 ? "" : _b, _c = _a.apellido, apellido = _c === void 0 ? "" : _c, _d = _a.cedula, cedula = _d === void 0 ? "" : _d, _e = _a.rol, rol = _e === void 0 ? "" : _e, contrasena = _a.contrasena;
-                _f.label = 1;
+                _a = req.body, _b = _a.nombre, nombre = _b === void 0 ? "" : _b, _c = _a.apellido, apellido = _c === void 0 ? "" : _c, _d = _a.cedula, cedula = _d === void 0 ? "" : _d, _e = _a.rol, rol = _e === void 0 ? "" : _e, _f = _a.contrasena, contrasena = _f === void 0 ? "" : _f;
+                _g.label = 1;
             case 1:
-                _f.trys.push([1, 7, , 8]);
-                if (!(rol === "")) return [3 /*break*/, 3];
+                _g.trys.push([1, 7, , 8]);
                 return [4 /*yield*/, usuario_associations_1.Persona.create({
                         cedula: cedula,
                         nombre: nombre,
-                        apellido: apellido,
+                        apellido: apellido
                     })];
             case 2:
-                persona_1 = _f.sent();
-                return [2 /*return*/, res.status(201).json({
-                        msg: "Personal registrado exitósamente",
-                        persona: persona_1
-                    })];
-            case 3: return [4 /*yield*/, usuario_associations_1.Persona.create({
-                    cedula: cedula,
-                    nombre: nombre,
-                    apellido: apellido
-                })];
-            case 4:
-                persona = _f.sent();
+                persona = _g.sent();
+                if (rol != "" && contrasena != "") {
+                    return [2 /*return*/, res.status(201).json({
+                            ok: true,
+                            msg: "Personal registrado exitosamente",
+                            usuario: persona
+                        })];
+                }
+                if (!(rol != "")) return [3 /*break*/, 4];
                 return [4 /*yield*/, usuario_associations_1.Usuario.create({
                         cedula: cedula,
                         roles_sistema: rol
                     })];
-            case 5:
-                usuario = _f.sent();
+            case 3:
+                usuario = _g.sent();
+                _g.label = 4;
+            case 4:
+                if (!(contrasena != "")) return [3 /*break*/, 6];
                 return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.create({
                         id_usuario: usuario.id_usuario,
                         contrasena: contrasena
                     })];
-            case 6:
-                _f.sent();
-                res.status(201).json({
+            case 5:
+                _g.sent();
+                _g.label = 6;
+            case 6: return [2 /*return*/, res.status(201).json({
                     ok: true,
                     msg: "Usuario registrado exitosamente",
                     usuario: persona
-                });
-                return [3 /*break*/, 8];
+                })];
             case 7:
-                error_2 = _f.sent();
+                error_2 = _g.sent();
                 console.log(error_2);
                 name_1 = error_2.name, errors = error_2.errors;
                 if (name_1 === "SequelizeValidationError") {
@@ -327,10 +327,6 @@ var getUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 _a.trys.push([0, 2, , 3]);
                 cedula = req.params.cedula;
                 return [4 /*yield*/, usuario_associations_1.Persona.findByPk(cedula, {
-                        include: {
-                            model: usuario_associations_1.Usuario,
-                            attributes: ['roles_sistema']
-                        },
                         attributes: ["cedula", "nombre", "apellido", "estado"],
                     })];
             case 1:
@@ -350,4 +346,62 @@ var getUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.getUsuario = getUsuario;
+var getUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, nombre, _c, apellido, personas, error_6;
+    var _d, _e, _f, _g, _h;
+    return __generator(this, function (_j) {
+        switch (_j.label) {
+            case 0:
+                _a = req.body, _b = _a.nombre, nombre = _b === void 0 ? "" : _b, _c = _a.apellido, apellido = _c === void 0 ? "" : _c;
+                _j.label = 1;
+            case 1:
+                _j.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, usuario_associations_1.Persona.findAll({
+                        where: (_d = {},
+                            _d[sequelize_1.Op.or] = {
+                                nombre: (_e = {},
+                                    _e[sequelize_1.Op.or] = (_f = {},
+                                        _f[sequelize_1.Op.startsWith] = nombre,
+                                        _f[sequelize_1.Op.substring] = nombre,
+                                        _f[sequelize_1.Op.endsWith] = nombre,
+                                        _f),
+                                    _e),
+                                apellido: (_g = {},
+                                    _g[sequelize_1.Op.or] = (_h = {},
+                                        _h[sequelize_1.Op.startsWith] = apellido,
+                                        _h[sequelize_1.Op.substring] = apellido,
+                                        _h[sequelize_1.Op.endsWith] = apellido,
+                                        _h),
+                                    _g)
+                            },
+                            _d)
+                    })];
+            case 2:
+                personas = _j.sent();
+                if (personas.length == 0) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: 'No se encontraron registros',
+                            personas: []
+                        })];
+                }
+                res.status(200).json({
+                    ok: true,
+                    msg: 'Búsqueda exitosa',
+                    personas: personas
+                });
+                return [3 /*break*/, 4];
+            case 3:
+                error_6 = _j.sent();
+                console.log(error_6);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador",
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getUsuarios = getUsuarios;
 //# sourceMappingURL=usuario.controller.js.map

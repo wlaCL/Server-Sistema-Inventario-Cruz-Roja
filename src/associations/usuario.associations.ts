@@ -1,4 +1,4 @@
-import {Persona, Usuario, Cuenta_Acceso} from "../models/index.model"
+import {Persona, Usuario, Cuenta_Acceso} from "../models/models"
 
 
 // Una persona puede tener varios roles en el sistema

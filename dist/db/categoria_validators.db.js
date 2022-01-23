@@ -75,8 +75,9 @@ var existeCategoriaID = function (id) {
                     })];
                 case 1:
                     categoria = _a.sent();
-                    if (!categoria) {
-                        throw ("No se han encontrado registros con el id de categoria ingresado");
+                    console.log(categoria);
+                    if (categoria == null) {
+                        throw ("No se han encontrado registros con el id ingresado");
                     }
                     return [2 /*return*/];
             }

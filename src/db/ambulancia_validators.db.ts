@@ -17,7 +17,7 @@ export const existeAmbulanciaNumVehiculo = async(num_vehiculo = "") =>{
     }); 
 
     if(ambulancia){
-        throw new Error("Ya existe un vehiculo con el número de vehículo ingresado")
+        throw new Error("Ya existe una ambulancia con el número de vehículo ingresado")
     }
 }
 

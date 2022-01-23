@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.permiteProductoCaducidad = exports.existeProductoCaducidadID = exports.existeProductoFechaCaducidad = exports.ExisteProductoID = exports.ExisteProductoNombre = void 0;
+exports.permiteProductoCaducidad = exports.existeProductoCaducidadID = exports.existeProductoFechaCaducidad = exports.ExisteTipoProductoID = exports.ExisteProductoNombre = void 0;
 var producto_associations_1 = require("../associations/producto.associations");
 var ExisteProductoNombre = function (nombre) {
     if (nombre === void 0) { nombre = ""; }
@@ -61,10 +61,10 @@ var ExisteProductoNombre = function (nombre) {
     });
 };
 exports.ExisteProductoNombre = ExisteProductoNombre;
-var ExisteProductoID = function (id) {
+var ExisteTipoProductoID = function (id) {
     if (id === void 0) { id = ""; }
     return __awaiter(void 0, void 0, void 0, function () {
-        var producto;
+        var producto, categoria;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, producto_associations_1.TProducto.findOne({
@@ -78,12 +78,25 @@ var ExisteProductoID = function (id) {
                     if (!producto) {
                         throw new Error("No existen registros");
                     }
+                    console.log("soy el producto : ", producto);
+                    return [4 /*yield*/, producto_associations_1.Categoria.findOne({
+                            where: {
+                                id_categoria: producto.id_categoria,
+                                estado: true
+                            }
+                        })];
+                case 2:
+                    categoria = _a.sent();
+                    console.log("soy la categoria");
+                    if (!producto) {
+                        throw new Error("No existen registros");
+                    }
                     return [2 /*return*/];
             }
         });
     });
 };
-exports.ExisteProductoID = ExisteProductoID;
+exports.ExisteTipoProductoID = ExisteTipoProductoID;
 //PRODUCTOS CON FECHA DE CADUCIDAD
 var existeProductoFechaCaducidad = function (fecha) {
     if (fecha === void 0) { fecha = ""; }
@@ -116,12 +129,13 @@ var existeProductoCaducidadID = function (id) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, producto_associations_1.Producto.findOne({
                         where: {
-                            id_tipoprod: id,
-                            where: true
+                            id_producto: id,
+                            disponibilidad: true
                         }
                     })];
                 case 1:
                     producto = _a.sent();
+                    console.log(producto);
                     if (!producto) {
                         throw new Error("El producto no se encuentra registrado");
                     }

@@ -1,5 +1,5 @@
 import { Request, Response} from 'express';
-import { Op } from 'sequelize';
+import {Op, where } from 'sequelize';
 import { TProducto, Unidad_Medida, Producto} from '../associations/producto.associations';
 import GenericError from '../models/errors/error';
 
@@ -7,7 +7,8 @@ import GenericError from '../models/errors/error';
 // TIPO DE PRODUCTO
 //crear producto
 export const postProducto = async(req: Request, res: Response)=>{
-    const {id_categoria, nombre, descripcion="", can_minima, tipo, medida =""} = req.body;
+    const {id_categoria, nombre, descripcion="", can_minima, tipo, medida ="", cantidad=""} = req.body;
+    let medidaProducto:any;
     try{  
            const producto:any = await TProducto.create({
                 id_categoria,
@@ -17,33 +18,43 @@ export const postProducto = async(req: Request, res: Response)=>{
                 tipo
             });
 
-           switch (medida) {
-               case "unidad":
-                   await Unidad_Medida.create({
-                       id_tipoprod: producto.id_tipoprod,
-                       unidad: true
-                   });
-                   producto.dataValues.medida ="unidad";
-                   
-                   break;
+            if(tipo == "Equipo"){
+                await Producto.create({
+                id_tipoprod: producto.id_tipoprod, 
+                cantidad
+              });
+            }
 
-               case "caja":
-                    await Unidad_Medida.create({
-                        id_tipoprod: producto.id_tipoprod,
-                        caja: true
-                    });
-                    producto.dataValues.medida ="caja";   
-                    console.log("soye el producto",producto)            
-                    break;
-           
-               default:
-                   break;
-           }
+            if(tipo == "Insumo Medico"){
+                switch (medida) {
+                    case "unidad":
+                       medidaProducto =  await Unidad_Medida.create({
+                            id_tipoprod: producto.id_tipoprod,
+                            unidad: true
+                        });
+                        
+                        break;
+     
+                    case "caja":
+                        medidaProducto =  await Unidad_Medida.create({
+                             id_tipoprod: producto.id_tipoprod,
+                             caja: true
+                         });
+                         break;
+                
+                    default:
+                        break;
+                }
+            }
+          
 
             return res.status(201).json({
             ok: true,
             msg: "Registro de producto exitoso", 
-            producto
+            producto: {
+                producto, 
+                medida: medidaProducto,         
+            }
         });
 
     }catch(error){
@@ -65,7 +76,7 @@ export const postProducto = async(req: Request, res: Response)=>{
 //actualizar producto
 export const putProducto = async(req: Request, res: Response)=>{
     const {id=""} = req.params;
-    const {nombre ="", descripcion="", can_minima ="", tipo = ""} = req.body;
+    const {nombre ="", descripcion="", can_minima =""} = req.body;
 
     try{  
         const tipo_producto:any = await TProducto.findOne({
@@ -78,7 +89,6 @@ export const putProducto = async(req: Request, res: Response)=>{
             nombre:(nombre!="")?nombre:tipo_producto.nombre,
             descripcion: (descripcion!="")?descripcion:tipo_producto.descripcion,
             can_minima: (can_minima != "")?can_minima:tipo_producto.can_minima,
-            tipo:(tipo!="")?tipo:tipo_producto.tipo
         },{
             where:{
                 id_tipoprod:id
@@ -88,7 +98,7 @@ export const putProducto = async(req: Request, res: Response)=>{
         
         
         if(producto[0] == 0){
-            const obj = new GenericError('', 'No se registraron cambios');
+            const obj = new GenericError('id', 'No se encontraron registros para actualizar');
             return res.status(400).json({
                 errors: obj.ErrorObj
             })
@@ -124,12 +134,12 @@ export const deleteProducto = async(req: Request, res: Response) =>{
     console.log(id);
     try{
         
-        const producto = await TProducto.update({
+        const producto:any = await TProducto.update({
             estado:false
         },{
             where: {
                 id_tipoprod:id
-            }
+            }, 
         }); 
 
         
@@ -139,6 +149,21 @@ export const deleteProducto = async(req: Request, res: Response) =>{
                errors: obj.ErrorObj
             })
         }
+
+        const productos = await Producto.update({
+            disponibilidad: false
+        },{
+            where:{
+                id_tipoprod:id
+            }
+        })
+
+        if(!productos){
+            res.status(400).json({
+                ok: false, 
+                msg: "No se pudo eliminar el producto"
+            })
+        }        
     
         res.status(200).json({
             ok:true,
@@ -174,6 +199,7 @@ export const getProducto = async(req: Request, res: Response)=>{
         }
 
         res.status(200).json({
+            ok: true,
             msg: "Búsqueda exitosa", 
             producto
         })
@@ -189,6 +215,7 @@ export const getProducto = async(req: Request, res: Response)=>{
 //consultar productos  POR VERIFICAR
 export const getProductos = async (req: Request, res: Response)=>{
     const {termino}  = req.params;
+    const {inicio= 0, fin = 3} = req.query
 
     try{
         const {rows, count}:any = await TProducto.findAndCountAll({
@@ -199,8 +226,11 @@ export const getProductos = async (req: Request, res: Response)=>{
                         [Op.endsWith]: termino,                    // LIKE '%hat'
                         [Op.substring]: termino
                     }
-                }
-            }
+                },
+                estado: true
+            },
+            offset: Number(inicio),
+            limit: Number(fin)
         });
 
         console.log(rows, count);
@@ -218,91 +248,17 @@ export const getProductos = async (req: Request, res: Response)=>{
             productos: rows,
             registros: count        
         })
-    }catch(error){}
+    }catch(error){
+        console.log(error); 
+        res.status(500).json({
+            ok: false, 
+            msg: "Ha ocurrido un error contácte con el administrador", 
+        });
+    }
 }
 
 
 // PRODUCTOS CON FECHA DE CADUCIDAD
-export const postProductoCaducidad = async (req:Request, res: Response) => {
-    const {id_tipoprod, fecha_caducidad, cantidad} = req.body; 
-
-    try{
-        const producto = await Producto.create({
-            id_tipoprod,
-            fecha_caducidad, 
-            cantidad
-        })
-        res.status(201).json({
-            ok:true, 
-            msg: "Producto registrado exitósamente",
-            producto 
-        })
-    }catch(error){
-        console.log(error);
-        const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-               errors:obj.ErrorObjt
-            });
-        } else{
-            return res.status(500).json({  
-                errors: "Ha ocurrido un error contácte con el administrador"      
-            }); 
-        } 
-    }
-}
-
-export const putProductoCaducidad = async (req: Request, res: Response) => {
-    const {id, cantidad = ""} = req.params;
-    const busqueda:any = await Producto.findOne({
-        where: {
-            producto:id
-        }
-    });
-
-    const producto = await Producto.update({        
-        cantidad:(cantidad!="")?cantidad:cantidad
-    },{
-        where: {id_producto:id}
-    });
-    
-    if(producto[0]==0){
-        const obj = new GenericError('', 'No se registraron cambios'); 
-        return res.status(400).json({
-            errors: obj.ErrorObj
-        })
-    }
-    res.status(200).json({
-        ok: true,
-        msg: "Actualiación exitósa", 
-        producto 
-    });
-}
-
-export const deleteProductoCaducidad = async (req: Request, res: Response) => {
-    const {id} = req.params; 
-    const producto = await Producto.update({
-        disponibilidad:false
-    },{
-        where:{
-            id_producto:id
-        }
-    });
-
-   res.status(200).json({
-       ok: true, 
-       msg: "Eliminación exitósa", 
-       producto
-   })
-}
-
-
-
-//PRODUCTOS ASIGNADOS A AMBULANCIAS
-export const postProductoAmbulancia = async () => {}
-export const putProductoAmbulancia = async () => {}
-export const deleteProductoAmbulancia = async () => {}
 
 
 

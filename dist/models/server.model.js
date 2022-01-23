@@ -47,6 +47,10 @@ var usuario_route_1 = __importDefault(require("../routes/usuario.route"));
 var categoria_route_1 = __importDefault(require("../routes/categoria.route"));
 var producto_route_1 = __importDefault(require("../routes/producto.route"));
 var ambulancia_route_1 = __importDefault(require("../routes/ambulancia.route"));
+var producto_ambulancia_1 = __importDefault(require("../routes/producto_ambulancia"));
+var inventario_route_1 = __importDefault(require("../routes/inventario.route"));
+var reporte_route_1 = __importDefault(require("../routes/reporte.route"));
+var auth_route_1 = __importDefault(require("../routes/auth.route"));
 require('../db/associations');
 var Server = /** @class */ (function () {
     function Server() {
@@ -55,7 +59,10 @@ var Server = /** @class */ (function () {
             categorias: '/api/categorias',
             productos: '/api/productos',
             ambulancia: '/api/ambulancias',
+            productos_ambulancias: '/api/productos_ambulancias',
             inventario: '/api/inventario',
+            reporte: '/api/reporte',
+            auth: '/api/auth'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '3000';
@@ -95,6 +102,8 @@ var Server = /** @class */ (function () {
         this.app.use((0, helmet_1.default)());
         //lectura de json
         this.app.use(express_1.default.json());
+        //
+        this.app.use(express_1.default.urlencoded({ extended: true }));
         //carpeta pública
         this.app.use(express_1.default.static('public'));
     };
@@ -103,6 +112,10 @@ var Server = /** @class */ (function () {
         this.app.use(this.apiPath.categorias, categoria_route_1.default);
         this.app.use(this.apiPath.productos, producto_route_1.default);
         this.app.use(this.apiPath.ambulancia, ambulancia_route_1.default);
+        this.app.use(this.apiPath.productos_ambulancias, producto_ambulancia_1.default);
+        this.app.use(this.apiPath.inventario, inventario_route_1.default);
+        this.app.use(this.apiPath.reporte, reporte_route_1.default);
+        this.app.use(this.apiPath.auth, auth_route_1.default);
     };
     Server.prototype.listen = function () {
         var _this = this;

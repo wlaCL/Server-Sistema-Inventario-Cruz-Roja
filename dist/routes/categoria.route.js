@@ -8,7 +8,7 @@ var categoria_validators_db_1 = require("../db/categoria_validators.db");
 var validar_campos_categoria_1 = require("../middlewares/validar_campos_categoria");
 var router = (0, express_1.Router)();
 //Obtener todas las categorias 
-router.get('', categoria_controller_1.getCategorias);
+router.get('/busqueda', categoria_controller_1.getCategorias);
 //Buscar categoria por nombre
 router.get('/:nombre', [
     (0, express_validator_1.check)('nombre')
@@ -37,7 +37,12 @@ router.put('/:id', [
         .exists().withMessage("El id es obligatorio")
         .isUUID().withMessage("El id no es válido")
         .isLength({ min: 36, max: 36 }).withMessage("El id no es válido"),
+    (0, express_validator_1.check)('nombre')
+        .optional({ nullable: true })
+        .isLength({ min: 3 }).withMessage("El nombre debe tener mínimo tres carácteres")
+        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
     (0, express_validator_1.check)('id').custom(categoria_validators_db_1.existeCategoriaID),
+    (0, express_validator_1.check)('nombre').custom(categoria_validators_db_1.existeCategoriaNombre),
     validar_campos_1.validarCampos,
     validar_campos_categoria_1.CamposValidosBody
 ], categoria_controller_1.putCategoria);

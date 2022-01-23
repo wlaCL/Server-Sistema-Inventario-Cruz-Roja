@@ -32,7 +32,7 @@ const Producto = db.define('producto', {
         }
     }, 
     cantidad:{
-       type: DataTypes.INTEGER, 
+     type: DataTypes.INTEGER, 
     }, 
     disponibilidad:{
         type:DataTypes.BOOLEAN,

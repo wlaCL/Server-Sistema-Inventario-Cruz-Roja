@@ -1,6 +1,5 @@
 import {Categoria} from "../associations/producto.associations"
-import GenericError from "../models/errors/error";
-import { NextFunction } from 'express';
+
 
 export const existeCategoriaNombre = async(nombre="")=>{    
     const categoria = await Categoria.findOne({
@@ -22,9 +21,10 @@ export const existeCategoriaID = async(id="")=>{
             estado:true
         }
     })
+    console.log(categoria);
     
-    if(!categoria){
-        throw("No se han encontrado registros con el id de categoria ingresado")
+    if(categoria == null){
+        throw("No se han encontrado registros con el id ingresado")
     }
 }
 

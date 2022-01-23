@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import {Op} from 'sequelize';
 
 import GenericError from '../models/errors/error';
-import {Categoria} from '../associations/producto.associations';
+import {Categoria, TProducto} from '../associations/producto.associations';
 
 export const getCategorias = async(req:Request, res: Response) => {
     const {inicio = 0, fin = 3} = req.query; 
@@ -82,12 +82,14 @@ export const postCategoria = async(req: Request, res: Response) => {
     const {nombre, descripcion} = req.body;    
 
    try{               
-        await Categoria.create({
+        const categoria = await Categoria.create({
             nombre, 
             descripcion
         });
         res.status(201).json({
+            ok: true,
             msg: "Categoría de creada exitósamente",
+            categoria
         });
    }catch(error){
     console.log(error);
@@ -125,7 +127,9 @@ export const putCategoria = async(req: Request, res: Response) =>{
         });
 
             res.status(200).json({
-            msg: "Actualizacion exitosa"
+            ok: true,
+            msg: "Actualizacion exitosa", 
+            categoria
         });
     }catch(error){
         console.log(error);
@@ -148,13 +152,23 @@ export const deleteCategoria = async (req: Request, res: Response) =>{
     const {id=""}  = req.params;
     
     try{
-        await Categoria.update({
+        const categoria = await Categoria.update({
             estado:false,
+            
         }, {
             where:{id_categoria:id}
         });
+        
+       const tproducto =  await TProducto.update({
+            estado: false
+        },{where:{
+            id_categoria:id
+        }});
+
         res.status(200).json({
-            msg: "Eliminación exitosa"
+            ok: true,
+            msg: "Eliminación exitosa",
+            categoria
         });
     }catch(error){
         console.log(error)

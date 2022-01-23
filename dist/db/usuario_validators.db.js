@@ -62,7 +62,12 @@ var existeUsuario = function (cedula) {
         var usuario;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, usuario_associations_1.Persona.findByPk(cedula)];
+                case 0: return [4 /*yield*/, usuario_associations_1.Persona.findOne({
+                        where: {
+                            cedula: cedula,
+                            estado: true
+                        }
+                    })];
                 case 1:
                     usuario = _a.sent();
                     if (!usuario) {
@@ -80,11 +85,16 @@ var usuarioActivo = function (cedula) {
         var persona;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, usuario_associations_1.Persona.findByPk(cedula)];
+                case 0: return [4 /*yield*/, usuario_associations_1.Persona.findOne({
+                        where: {
+                            cedula: cedula,
+                            estado: false
+                        }
+                    })];
                 case 1:
                     persona = _a.sent();
-                    if (persona.estado == false) {
-                        throw new Error("El usuario se encuentra inactivado");
+                    if (persona) {
+                        throw new Error("El usuario se encuentra inactivo");
                     }
                     return [2 /*return*/];
             }

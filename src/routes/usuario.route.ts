@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { postUsuario, deleteUsuario, actualizarUsuario, getUsuario } from '../controllers/usuario.controller';
-import { rolValido, contrasenaValida, AlmenosUnCampo, tamanoContrasena } from '../middlewares/validar_campos_usuario';
+import { postUsuario, deleteUsuario, actualizarUsuario, getUsuario, getUsuarios } from '../controllers/usuario.controller';
+import { AlmenosUnCampo, tamanoContrasena } from '../middlewares/validar_campos_usuario';
 import { validarCampos } from '../middlewares/validar_campos';
 import { existeUsuario, noExistePersona, usuarioActivo } from '../db/usuario_validators.db';
 
 const router = Router(); 
-
 
 //crear usuario
 router.post('', [   
@@ -23,9 +22,13 @@ router.post('', [
         .isLength({min:3}).withMessage("El apellido debe tener mínimo tres carácteres")
         .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'), 
     check('cedula').custom(noExistePersona), 
-    validarCampos,
-    rolValido, 
-    contrasenaValida,   
+    check('rol')
+        .exists().withMessage("El rol es obligatorio")
+        .isIn(['user_web', 'user_app']).withMessage("rol no válido: [user_web, user_app]"),
+    check('contrasena')
+        .exists().withMessage("La contraseña es obligatoria")
+        .isLength({min:10}).withMessage("La constraseña debe tener un un mínimo de 10 caracteres"),
+    validarCampos,   
 ],postUsuario);
 
 // eliminar usuario
@@ -39,8 +42,7 @@ router.delete('/:cedula',[
 
 //actualizar datos de usuario 
 router.put('/:cedula', [
-    AlmenosUnCampo,    
-    rolValido, 
+    AlmenosUnCampo,     
     check('cedula')
         .exists().withMessage("La cédula es obligatoria")
         .isNumeric().withMessage("La cédula debe contener solo números")
@@ -74,7 +76,18 @@ router.get('/:cedula',[
     validarCampos
 ],    
 getUsuario)
+
+
 //buscar usuario 
+router.get('',[
+    check('nombre')
+        .optional({nullable: true})
+        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
+    check('apellido')
+        .optional({nullable: true})
+        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
+    validarCampos
+],getUsuarios)
 
 
 

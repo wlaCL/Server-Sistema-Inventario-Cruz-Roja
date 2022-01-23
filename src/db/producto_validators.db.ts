@@ -1,4 +1,4 @@
-import {Producto, TProducto} from '../associations/producto.associations'
+import {Producto, TProducto, Categoria} from '../associations/producto.associations'
 
 export const ExisteProductoNombre = async(nombre = "")=>{
     const producto = await TProducto.findOne({
@@ -13,17 +13,33 @@ export const ExisteProductoNombre = async(nombre = "")=>{
     }
 }
 
-export const ExisteProductoID = async(id= "")=>{
-    const producto = await TProducto.findOne({
+export const ExisteTipoProductoID = async(id= "")=>{
+    const producto:any = await TProducto.findOne({
         where: {
             id_tipoprod:id, 
             estado:true
         }
     }); 
+
+    if(!producto){
+        throw new Error("No existen registros");
+    }
+
+    console.log( "soy el producto : ", producto);
+
+    const categoria = await Categoria.findOne({
+        where:{
+            id_categoria: producto.id_categoria, 
+            estado: true
+        }
+    });
+
+    console.log("soy la categoria")
     
     if(!producto){
         throw new Error("No existen registros");
     }
+    
 }
 
 //PRODUCTOS CON FECHA DE CADUCIDAD
@@ -43,11 +59,11 @@ export const existeProductoFechaCaducidad = async(fecha="")=>{
 export const existeProductoCaducidadID = async(id="")=>{
     const producto = await Producto.findOne({
         where: {
-            id_tipoprod:id, 
-            where:true
+            id_producto:id, 
+            disponibilidad:true
         }
     })
-
+    console.log(producto);
     if(!producto){
         throw new Error("El producto no se encuentra registrado")
     }

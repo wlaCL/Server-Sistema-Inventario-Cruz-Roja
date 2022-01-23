@@ -22,9 +22,13 @@ router.post('', [
         .isLength({ min: 3 }).withMessage("El apellido debe tener mínimo tres carácteres")
         .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
     (0, express_validator_1.check)('cedula').custom(usuario_validators_db_1.noExistePersona),
+    (0, express_validator_1.check)('rol')
+        .exists().withMessage("El rol es obligatorio")
+        .isIn(['user_web', 'user_app']).withMessage("rol no válido: [user_web, user_app]"),
+    (0, express_validator_1.check)('contrasena')
+        .exists().withMessage("La contraseña es obligatoria")
+        .isLength({ min: 10 }).withMessage("La constraseña debe tener un un mínimo de 10 caracteres"),
     validar_campos_1.validarCampos,
-    validar_campos_usuario_1.rolValido,
-    validar_campos_usuario_1.contrasenaValida,
 ], usuario_controller_1.postUsuario);
 // eliminar usuario
 router.delete('/:cedula', [
@@ -37,7 +41,6 @@ router.delete('/:cedula', [
 //actualizar datos de usuario 
 router.put('/:cedula', [
     validar_campos_usuario_1.AlmenosUnCampo,
-    validar_campos_usuario_1.rolValido,
     (0, express_validator_1.check)('cedula')
         .exists().withMessage("La cédula es obligatoria")
         .isNumeric().withMessage("La cédula debe contener solo números")
@@ -70,5 +73,14 @@ router.get('/:cedula', [
     validar_campos_1.validarCampos
 ], usuario_controller_1.getUsuario);
 //buscar usuario 
+router.get('', [
+    (0, express_validator_1.check)('nombre')
+        .optional({ nullable: true })
+        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
+    (0, express_validator_1.check)('apellido')
+        .optional({ nullable: true })
+        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
+    validar_campos_1.validarCampos
+], usuario_controller_1.getUsuarios);
 exports.default = router;
 //# sourceMappingURL=usuario.route.js.map
