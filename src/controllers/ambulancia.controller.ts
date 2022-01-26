@@ -108,7 +108,7 @@ export const actualizarAmbulancia = async(req:Request, res: Response) =>{
 }
 
 //Busqueda de ambulancia
-export const obtenerAmbulancia=async (req:Request, res:Response) => {
+export const obtenerAmbulancia =async (req:Request, res:Response) => {
     const {termino} = req.params; 
 
     try{
@@ -117,7 +117,7 @@ export const obtenerAmbulancia=async (req:Request, res:Response) => {
             [Op.and]:{
                 [Op.or]:{
                     placa:termino, 
-                    num_vehiculo: termino,             
+                    num_vehiculo: termino,      
                     }
                 },
                 estado: true
@@ -152,6 +152,7 @@ export const obtenerAmbulancias = async (req: Request, resp: Response)=>{
                 estado: true
             }
         });
+        console.log(ambulancias);
 
         if(ambulancias.length == 0 ){
             return resp.status(400).json({
@@ -172,6 +173,6 @@ export const obtenerAmbulancias = async (req: Request, resp: Response)=>{
         resp.status(500).json({
             ok: false, 
             msg: "Ha ocurrido un error contáctate con el administrador"
-        })
+        });
     }    
 }

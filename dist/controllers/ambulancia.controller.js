@@ -234,6 +234,7 @@ var obtenerAmbulancias = function (req, resp) { return __awaiter(void 0, void 0,
                     })];
             case 1:
                 ambulancias = _a.sent();
+                console.log(ambulancias);
                 if (ambulancias.length == 0) {
                     return [2 /*return*/, resp.status(400).json({
                             ok: false,

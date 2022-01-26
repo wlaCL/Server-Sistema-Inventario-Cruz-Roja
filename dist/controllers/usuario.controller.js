@@ -60,7 +60,7 @@ var postUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     })];
             case 2:
                 persona = _g.sent();
-                if (rol != "" && contrasena != "") {
+                if (rol == "" && contrasena == "") {
                     return [2 /*return*/, res.status(201).json({
                             ok: true,
                             msg: "Personal registrado exitosamente",

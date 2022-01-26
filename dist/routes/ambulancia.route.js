@@ -45,6 +45,6 @@ router.put('/:placa', [
 ], ambulancia_controller_1.actualizarAmbulancia);
 //obtener datos de ambulancia
 router.get('/:termino', ambulancia_controller_1.obtenerAmbulancia);
-router.get('/busqueda', ambulancia_controller_1.obtenerAmbulancias);
+router.get('', ambulancia_controller_1.obtenerAmbulancias);
 exports.default = router;
 //# sourceMappingURL=ambulancia.route.js.map

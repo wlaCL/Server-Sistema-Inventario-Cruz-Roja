@@ -16,7 +16,7 @@ export const postUsuario = async(req:Request, res: Response) =>{
             apellido
         });
 
-        if(rol != "" && contrasena != ""){
+        if(rol == "" && contrasena == ""){
            return res.status(201).json({
                 ok:true,
                 msg:"Personal registrado exitosamente",

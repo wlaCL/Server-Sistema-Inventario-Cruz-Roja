@@ -42,8 +42,7 @@ router.put('/:placa', [
     check('num_vehiculo')
         .optional({nullable:true})
         .isNumeric().withMessage("El número de vehículo solo puede contener números")
-        .isInt({min:1,}).withMessage("El número de vehículo debe ser positivo"),
-        
+        .isInt({min:1,}).withMessage("El número de vehículo debe ser positivo"),        
     check('num_vehiculo').custom(existeAmbulanciaNumVehiculo),
     validarCampos, 
     //validarCamposAmbulancia
@@ -52,8 +51,6 @@ router.put('/:placa', [
 //obtener datos de ambulancia
 router.get('/:termino', obtenerAmbulancia); 
 
-router.get('/busqueda',obtenerAmbulancias);
-
-
+router.get('', obtenerAmbulancias);
 
 export default router; 

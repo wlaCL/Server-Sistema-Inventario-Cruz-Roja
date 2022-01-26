@@ -36,10 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = void 0;
+exports.loginWeb = exports.loginApp = void 0;
 var usuario_associations_1 = require("../associations/usuario.associations");
 var generar_jwt_1 = require("../helpers/generar_jwt");
-var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, cedula, password, persona, usuario, cuenta, token, error_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -57,7 +57,6 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                             }
                         })];
                 }
-                console.log("soy la persona ", persona.cedula);
                 if (!persona.estado) {
                     return [2 /*return*/, res.status(400).json({
                             errors: {
@@ -73,6 +72,22 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     })];
             case 2:
                 usuario = _b.sent();
+                if (!usuario) {
+                    return [2 /*return*/, res.status(400).json({
+                            errors: {
+                                ok: false,
+                                msg: "Usuario y/o contraseña no son válidos"
+                            }
+                        })];
+                }
+                if (usuario.roles_sistema != "user_app") {
+                    return [2 /*return*/, res.status(400).json({
+                            errors: {
+                                ok: false,
+                                msg: "Usuario y/o contraseña no son válidos"
+                            }
+                        })];
+                }
                 return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.findByPk(usuario.id_usuario)];
             case 3:
                 cuenta = _b.sent();
@@ -108,5 +123,90 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
         }
     });
 }); };
-exports.login = login;
+exports.loginApp = loginApp;
+var loginWeb = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, cedula, password, persona, usuario, cuenta, token, error_2;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 5, , 6]);
+                _a = req.body, cedula = _a.cedula, password = _a.password;
+                return [4 /*yield*/, usuario_associations_1.Persona.findByPk(cedula)];
+            case 1:
+                persona = _b.sent();
+                if (!persona) {
+                    return [2 /*return*/, res.status(400).json({
+                            errors: {
+                                ok: false,
+                                msg: "Usuario y/o contraseña no son válidos"
+                            }
+                        })];
+                }
+                if (!persona.estado) {
+                    return [2 /*return*/, res.status(400).json({
+                            errors: {
+                                ok: false,
+                                msg: "Usuario y/o contraseña no son válidos"
+                            }
+                        })];
+                }
+                return [4 /*yield*/, usuario_associations_1.Usuario.findOne({
+                        where: {
+                            cedula: persona.cedula
+                        }
+                    })];
+            case 2:
+                usuario = _b.sent();
+                if (!usuario) {
+                    return [2 /*return*/, res.status(400).json({
+                            errors: {
+                                ok: false,
+                                msg: "Usuario y/o contraseña no son válidos"
+                            }
+                        })];
+                }
+                if (usuario.roles_sistema != "user_web") {
+                    return [2 /*return*/, res.status(400).json({
+                            errors: {
+                                ok: false,
+                                msg: "Usuario y/o contraseña no son válidos"
+                            }
+                        })];
+                }
+                return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.findByPk(usuario.id_usuario)];
+            case 3:
+                cuenta = _b.sent();
+                if (cuenta.contrasena !== password) {
+                    return [2 /*return*/, res.status(400).json({
+                            errors: {
+                                ok: false,
+                                msg: "Usuario y/o contraseña no son válidos"
+                            }
+                        })];
+                }
+                return [4 /*yield*/, (0, generar_jwt_1.generarJWT)(persona.cedula)];
+            case 4:
+                token = _b.sent();
+                res.status(200).json({
+                    ok: true,
+                    msg: "Acceso Exitóso",
+                    persona: persona,
+                    token: token
+                });
+                return [3 /*break*/, 6];
+            case 5:
+                error_2 = _b.sent();
+                console.log(error_2);
+                res.status(500).json({
+                    errors: {
+                        ok: false,
+                        msg: "Ha ocurrido un error contáctate con el administrador"
+                    }
+                });
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
+        }
+    });
+}); };
+exports.loginWeb = loginWeb;
 //# sourceMappingURL=auth.controller.js.map
