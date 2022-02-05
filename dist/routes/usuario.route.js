@@ -6,9 +6,13 @@ var usuario_controller_1 = require("../controllers/usuario.controller");
 var validar_campos_usuario_1 = require("../middlewares/validar_campos_usuario");
 var validar_campos_1 = require("../middlewares/validar_campos");
 var usuario_validators_db_1 = require("../db/usuario_validators.db");
+var validar_jwt_middleware_1 = require("../middlewares/validar_jwt.middleware");
+var validar_rol_1 = require("../middlewares/validar_rol");
 var router = (0, express_1.Router)();
 //crear usuario
 router.post('', [
+    validar_jwt_middleware_1.validarJWT,
+    validar_rol_1.isUserWeb,
     (0, express_validator_1.check)('cedula')
         .exists().withMessage('El cedula es obligatoria')
         .isNumeric().withMessage('La cédula debe contener solo numeros')
@@ -28,10 +32,13 @@ router.post('', [
     (0, express_validator_1.check)('contrasena')
         .exists().withMessage("La contraseña es obligatoria")
         .isLength({ min: 10 }).withMessage("La constraseña debe tener un un mínimo de 10 caracteres"),
+    (0, express_validator_1.check)('cedula').custom(usuario_validators_db_1.noExistePersona),
     validar_campos_1.validarCampos,
 ], usuario_controller_1.postUsuario);
 // eliminar usuario
 router.delete('/:cedula', [
+    validar_jwt_middleware_1.validarJWT,
+    validar_rol_1.isUserWeb,
     (0, express_validator_1.check)('cedula')
         .exists().withMessage('La cedula es obligatoria'),
     (0, express_validator_1.check)('cedula').custom(usuario_validators_db_1.existeUsuario),
@@ -40,7 +47,8 @@ router.delete('/:cedula', [
 ], usuario_controller_1.deleteUsuario);
 //actualizar datos de usuario 
 router.put('/:cedula', [
-    validar_campos_usuario_1.AlmenosUnCampo,
+    validar_jwt_middleware_1.validarJWT,
+    validar_rol_1.isUserWeb,
     (0, express_validator_1.check)('cedula')
         .exists().withMessage("La cédula es obligatoria")
         .isNumeric().withMessage("La cédula debe contener solo números")
@@ -59,10 +67,12 @@ router.put('/:cedula', [
     (0, express_validator_1.check)('cedula').custom(usuario_validators_db_1.usuarioActivo),
     (0, express_validator_1.check)('cedula').custom(usuario_validators_db_1.existeUsuario),
     validar_campos_1.validarCampos,
-    //tamanoContrasena 
+    validar_campos_usuario_1.AlmenosUnCampo,
 ], usuario_controller_1.actualizarUsuario);
 //Obtener dartos del usuario
 router.get('/:cedula', [
+    validar_jwt_middleware_1.validarJWT,
+    validar_rol_1.isUserWeb,
     (0, express_validator_1.check)('cedula')
         .exists().withMessage("La cédula es obligatoria"),
     (0, express_validator_1.check)('cedula')
@@ -74,6 +84,8 @@ router.get('/:cedula', [
 ], usuario_controller_1.getUsuario);
 //buscar usuario 
 router.get('', [
+    validar_jwt_middleware_1.validarJWT,
+    validar_rol_1.isUserWeb,
     (0, express_validator_1.check)('nombre')
         .optional({ nullable: true })
         .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),

@@ -39,42 +39,108 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getReporte = exports.postAuthorInventory = void 0;
+exports.getReporte = exports.putReporte = exports.postReporte = void 0;
 var reporte_associations_1 = require("../associations/reporte.associations");
-var error_1 = __importDefault(require("../models/errors/error"));
 var moment_1 = __importDefault(require("moment"));
-var postAuthorInventory = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, placa, _c, cedula, _d, fecha, _e, rol, trabaja, obj, error_2;
-    return __generator(this, function (_f) {
-        switch (_f.label) {
+var postReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, placa, _c, fecha, cedula, trabaja, reporte, error_1;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
-                _a = req.body, _b = _a.placa, placa = _b === void 0 ? "" : _b, _c = _a.cedula, cedula = _c === void 0 ? "" : _c, _d = _a.fecha, fecha = _d === void 0 ? "" : _d, _e = _a.rol, rol = _e === void 0 ? "" : _e;
-                _f.label = 1;
+                _a = req.body, _b = _a.placa, placa = _b === void 0 ? "" : _b, _c = _a.fecha, fecha = _c === void 0 ? "" : _c;
+                cedula = req.user;
+                _d.label = 1;
             case 1:
-                _f.trys.push([1, 3, , 4]);
+                _d.trys.push([1, 4, , 5]);
                 return [4 /*yield*/, reporte_associations_1.Trabaja.create({
                         placa: placa,
                         cedula: cedula,
                         fecha_inicio: (0, moment_1.default)(fecha, "YYYY-MM-DD").format(),
                         fecha_fin: (0, moment_1.default)(fecha, "YYYY-MM-DD").format(),
-                        rol: rol
+                        rol: "Paramedico"
                     })];
             case 2:
-                trabaja = _f.sent();
+                trabaja = _d.sent();
                 if (!trabaja) {
-                    obj = new error_1.default('registro no exitoso', "no se pudo realizar el registro");
-                    res.status(400).json({
-                        errors: obj.ErrorObj
-                    });
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "No se ha podido registrar el reporte"
+                        })];
+                }
+                console.log("trabaja $trabaja");
+                return [4 /*yield*/, reporte_associations_1.Reporte.create({
+                        id_trabaja: trabaja.id_trabaja,
+                        fecha: (0, moment_1.default)(trabaja.fecha_inicio, "YYYY-MM-DD").format(),
+                        placa: trabaja.placa
+                    })];
+            case 3:
+                reporte = _d.sent();
+                res.status(200).json({
+                    ok: true,
+                    msg: "Registro existoso",
+                    reporte: reporte
+                });
+                return [3 /*break*/, 5];
+            case 4:
+                error_1 = _d.sent();
+                console.log(error_1);
+                res.status(500).json({
+                    errors: {
+                        ok: false,
+                        msg: "Ha ocurrido un error contáctate con el administrador"
+                    }
+                });
+                return [3 /*break*/, 5];
+            case 5:
+                ;
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.postReporte = postReporte;
+var putReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, novedades, _c, base, _d, asistente, _e, conductor, _f, id, report, reporte, error_2;
+    return __generator(this, function (_g) {
+        switch (_g.label) {
+            case 0:
+                _a = req.body, _b = _a.novedades, novedades = _b === void 0 ? "" : _b, _c = _a.base, base = _c === void 0 ? "" : _c, _d = _a.asistente, asistente = _d === void 0 ? "" : _d, _e = _a.conductor, conductor = _e === void 0 ? "" : _e, _f = _a.id, id = _f === void 0 ? "" : _f;
+                _g.label = 1;
+            case 1:
+                _g.trys.push([1, 4, , 5]);
+                return [4 /*yield*/, reporte_associations_1.Reporte.findByPk(id)];
+            case 2:
+                report = _g.sent();
+                console.log(report);
+                if (report.base != null) {
+                    return [2 /*return*/, res.status(401).json({
+                            ok: false,
+                            msg: "No tienes permisos"
+                        })];
+                }
+                return [4 /*yield*/, reporte_associations_1.Reporte.update({
+                        novedades: novedades,
+                        base: base,
+                        asistente: asistente,
+                        conductor: conductor
+                    }, { where: {
+                            id_reporte: id
+                        } })];
+            case 3:
+                reporte = _g.sent();
+                if (!reporte) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "No se ha podido finalizar el reporte"
+                        })];
                 }
                 res.status(200).json({
                     ok: true,
-                    msg: "registro existoso",
-                    trabaja: trabaja
+                    msg: "Reporte finalizado exitosamente",
+                    reporte: reporte
                 });
-                return [3 /*break*/, 4];
-            case 3:
-                error_2 = _f.sent();
+                return [3 /*break*/, 5];
+            case 4:
+                error_2 = _g.sent();
                 console.log(error_2);
                 res.status(500).json({
                     errors: {
@@ -82,20 +148,69 @@ var postAuthorInventory = function (req, res) { return __awaiter(void 0, void 0,
                         msg: "Ha ocurrido un error contáctate con el administrador"
                     }
                 });
-                return [3 /*break*/, 4];
-            case 4:
-                ;
-                return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
-exports.postAuthorInventory = postAuthorInventory;
+exports.putReporte = putReporte;
 var getReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        res.status(200).json({
-            msg: "Soy el controlador para la obtencion del resporte"
-        });
-        return [2 /*return*/];
+    var cedula, _a, _b, fecha, placa, turno, reporte, error_3;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                cedula = req.user;
+                _a = req.body, _b = _a.fecha, fecha = _b === void 0 ? "" : _b, placa = _a.placa;
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 4, , 5]);
+                return [4 /*yield*/, reporte_associations_1.Trabaja.findOne({
+                        where: {
+                            cedula: cedula,
+                            fecha_inicio: fecha,
+                            placa: placa
+                        }
+                    })];
+            case 2:
+                turno = _c.sent();
+                if (!turno) {
+                    return [2 /*return*/, res.status(404).json({
+                            ok: false,
+                            msg: "Aun no has registrado el reporte",
+                        })];
+                }
+                return [4 /*yield*/, reporte_associations_1.Reporte.findOne({
+                        where: {
+                            id_trabaja: turno.id_trabaja
+                        }
+                    })];
+            case 3:
+                reporte = _c.sent();
+                if (reporte.base == null) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "No ha finalizado el reporte",
+                            reporte: reporte
+                        })];
+                }
+                res.status(200).json({
+                    ok: true,
+                    msg: "El reporte ya se encuentra registrado",
+                    reporte: reporte
+                });
+                return [3 /*break*/, 5];
+            case 4:
+                error_3 = _c.sent();
+                console.log(error_3);
+                res.status(500).json({
+                    errors: {
+                        ok: false,
+                        msg: "Ha ocurrido un error contáctate con el administrador"
+                    }
+                });
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
+        }
     });
 }); };
 exports.getReporte = getReporte;

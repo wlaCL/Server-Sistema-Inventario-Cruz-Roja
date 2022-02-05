@@ -36,9 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductosAmbulancia = exports.deleteProductoAmbulancia = exports.postProductoAmbulancia = void 0;
+exports.getProductosAmbulanciaID = exports.getProductosAmbulanciaNombre = exports.deleteProductoAmbulancia = exports.postProductoAmbulancia = void 0;
 //import Producto_Ambulancia from '../models/producto_ambulancia';
 var producto_associations_1 = require("../associations/producto.associations");
+var sequelize_1 = require("sequelize");
 var postProductoAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, cant_ambulancia, id_producto, placa, producto, error_1;
     return __generator(this, function (_b) {
@@ -51,7 +52,8 @@ var postProductoAmbulancia = function (req, res) { return __awaiter(void 0, void
                 return [4 /*yield*/, producto_associations_1.Producto_Ambulancia.create({
                         cant_ambulancia: cant_ambulancia,
                         id_producto: id_producto,
-                        placa: placa
+                        placa: placa,
+                        stock: cant_ambulancia
                     })];
             case 2:
                 producto = _b.sent();
@@ -119,8 +121,87 @@ var deleteProductoAmbulancia = function (req, res) { return __awaiter(void 0, vo
     });
 }); };
 exports.deleteProductoAmbulancia = deleteProductoAmbulancia;
-var getProductosAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, placa, _c, id, data, error_3;
+var getProductosAmbulanciaNombre = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, placa, _c, termino, data, error_3;
+    var _d, _e;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
+            case 0:
+                _a = req.params, _b = _a.placa, placa = _b === void 0 ? "" : _b, _c = _a.termino, termino = _c === void 0 ? "" : _c;
+                _f.label = 1;
+            case 1:
+                _f.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, producto_associations_1.TProducto.findAll({
+                        include: [
+                            {
+                                model: producto_associations_1.Categoria,
+                                attributes: ['nombre'],
+                                where: {
+                                    estado: true,
+                                    nombre: "Varios"
+                                }
+                            },
+                            {
+                                model: producto_associations_1.Producto,
+                                attributes: ['id_producto', 'fecha_caducidad', 'cantidad', 'estado'],
+                                where: {
+                                    estado: true
+                                },
+                                include: [
+                                    {
+                                        model: producto_associations_1.Producto_Ambulancia,
+                                        where: {
+                                            placa: placa,
+                                            estado: true
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        where: {
+                            nombre: (_d = {},
+                                _d[sequelize_1.Op.or] = (_e = {},
+                                    _e[sequelize_1.Op.startsWith] = termino,
+                                    _e[sequelize_1.Op.endsWith] = termino,
+                                    _e[sequelize_1.Op.substring] = termino,
+                                    _e),
+                                _d),
+                            estado: true,
+                        }
+                    })];
+            case 2:
+                data = _f.sent();
+                console.log(data);
+                if (data.length == 0) {
+                    return [2 /*return*/, res.status(404).json({
+                            ok: false,
+                            msg: "No hay regisros"
+                        })];
+                }
+                return [2 /*return*/, res.status(200).json({
+                        ok: true,
+                        msg: "Consulta éxitosa",
+                        data: data
+                    })];
+            case 3:
+                error_3 = _f.sent();
+                console.log(error_3);
+                res.status(500).json({
+                    errors: {
+                        ok: false,
+                        msg: "Ha ocurrido un errror contáctate con el administrador"
+                    }
+                });
+                return [3 /*break*/, 4];
+            case 4:
+                ;
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.getProductosAmbulanciaNombre = getProductosAmbulanciaNombre;
+var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, placa, _c, id, data, error_4;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
@@ -132,23 +213,32 @@ var getProductosAmbulancia = function (req, res) { return __awaiter(void 0, void
                         include: [
                             {
                                 model: producto_associations_1.Categoria,
-                                attributes: ['id_categoria', 'nombre']
+                                attributes: ['nombre'],
+                                where: {
+                                    estado: true,
+                                    nombre: "Varios"
+                                }
                             },
                             {
                                 model: producto_associations_1.Producto,
-                                attributes: ['id_producto', 'fecha_caducidad', 'cantidad', 'disponibilidad'],
+                                attributes: ['id_producto', 'fecha_caducidad', 'cantidad', 'estado'],
+                                where: {
+                                    estado: true
+                                },
                                 include: [
                                     {
                                         model: producto_associations_1.Producto_Ambulancia,
                                         where: {
-                                            placa: placa
+                                            placa: placa,
+                                            estado: true
                                         }
                                     }
                                 ]
                             }
                         ],
                         where: {
-                            id_tipoprod: id
+                            id_tipoprod: id,
+                            estado: true,
                         }
                     })];
             case 2:
@@ -165,12 +255,12 @@ var getProductosAmbulancia = function (req, res) { return __awaiter(void 0, void
                         data: data
                     })];
             case 3:
-                error_3 = _d.sent();
-                console.log(error_3);
+                error_4 = _d.sent();
+                console.log(error_4);
                 res.status(500).json({
                     errors: {
                         ok: false,
-                        msg: "Ha ocurrido un errro contáctate con el administrador"
+                        msg: "Ha ocurrido un errror contáctate con el administrador"
                     }
                 });
                 return [3 /*break*/, 4];
@@ -180,5 +270,5 @@ var getProductosAmbulancia = function (req, res) { return __awaiter(void 0, void
         }
     });
 }); };
-exports.getProductosAmbulancia = getProductosAmbulancia;
+exports.getProductosAmbulanciaID = getProductosAmbulanciaID;
 //# sourceMappingURL=producto_ambulancia.controller.js.map

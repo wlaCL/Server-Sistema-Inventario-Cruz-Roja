@@ -1,33 +1,41 @@
-import {Trabaja} from '../associations/reporte.associations';
+import {Trabaja, Reporte} from '../associations/reporte.associations';
 
 import { Request, Response } from "express";
-import GenericError from '../models/errors/error';
 import moment from 'moment';
 
-export const postAuthorInventory = async(req:Request, res:Response)=>{
 
-    const {placa="", cedula="", fecha="", rol=""} = req.body;
-  
+export const postReporte = async(req:Request, res:Response)=>{
+
+    const {placa="",fecha=""} = req.body;
+    const cedula = req.user;
+    
     try{
-        const trabaja = await Trabaja.create({
+        const trabaja:any = await Trabaja.create({
             placa, 
             cedula, 
             fecha_inicio: moment(fecha, "YYYY-MM-DD").format(), 
             fecha_fin:  moment(fecha,"YYYY-MM-DD").format(), 
-            rol
+            rol: "Paramedico"
         });
     
         if(!trabaja){
-            const obj = new GenericError('registro no exitoso', "no se pudo realizar el registro")
-            res.status(400).json({
-                errors: obj.ErrorObj
+            return res.status(400).json({
+               ok:false, 
+               msg: "No se ha podido registrar el reporte"
             });        
         }
-    
+        console.log(`trabaja $trabaja`);
+
+        const reporte: any = await Reporte.create({
+            id_trabaja: trabaja.id_trabaja, 
+            fecha: moment(trabaja.fecha_inicio, "YYYY-MM-DD").format(), 
+            placa: trabaja.placa
+        });
+
         res.status(200).json({
             ok: true,
-            msg: "registro existoso", 
-            trabaja
+            msg: "Registro existoso", 
+            reporte
         });
 
     }catch(error){
@@ -42,8 +50,101 @@ export const postAuthorInventory = async(req:Request, res:Response)=>{
 }
 
 
+export const putReporte  = async (req:Request, res:Response) =>{
+    const {novedades="", base="", asistente="", conductor="", id=""} = req.body;
+
+    try{
+        const report:any = await Reporte.findByPk(id);
+        console.log(report);
+
+        if(report.base != null ){
+            return res.status(401).json({
+                ok:false,
+                msg: "No tienes permisos"
+            });            
+        }
+
+        const reporte = await Reporte.update({
+            novedades, 
+            base, 
+            asistente, 
+            conductor
+        },{where:{
+            id_reporte: id
+        }});
+
+
+        if(!reporte){
+            return res.status(400).json({
+                ok:false, 
+                msg: "No se ha podido finalizar el reporte"                
+            });
+        }
+
+        res.status(200).json({
+            ok: true, 
+            msg: "Reporte finalizado exitosamente", 
+            reporte
+        })
+
+
+    }catch(error){
+        console.log(error); 
+        res.status(500).json({
+            errors:{
+                ok: false, 
+                msg: "Ha ocurrido un error contáctate con el administrador"
+            }
+        });
+    }   
+}
+
 export const getReporte = async (req:Request, res:Response)=>{
-    res.status(200).json({
-        msg: "Soy el controlador para la obtencion del resporte"
-    });
+   const cedula:any = req.user; 
+   const {fecha="", placa}= req.body;
+    try{
+        const turno:any = await Trabaja.findOne({
+            where:{
+                cedula,
+                fecha_inicio:fecha,
+                placa 
+            }
+        });
+     
+        if(!turno){
+            return res.status(404).json({
+                ok: false,
+                msg: "Aun no has registrado el reporte",             
+            });
+        }
+     
+        const reporte:any = await Reporte.findOne({
+            where:{
+                id_trabaja: turno.id_trabaja
+            }
+        });     
+      
+         if(reporte.base == null){
+             return res.status(400).json({
+                ok: false,
+                msg: "No ha finalizado el reporte",
+                reporte
+             }); 
+         }
+      
+         res.status(200).json({
+             ok: true, 
+             msg: "El reporte ya se encuentra registrado", 
+            reporte
+         });
+
+    }catch(error){
+       console.log(error); 
+       res.status(500).json({
+           errors:{
+               ok: false, 
+               msg: "Ha ocurrido un error contáctate con el administrador"
+           }
+       });
+   }
 }

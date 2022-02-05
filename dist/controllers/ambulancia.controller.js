@@ -45,7 +45,7 @@ var models_1 = require("../models/models");
 var error_1 = __importDefault(require("../models/errors/error"));
 //crear ambulancia
 var postAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, placa, num_vehiculo, descripcion, ambulancia, error_2, name_1, errors, obj;
+    var _a, placa, num_vehiculo, descripcion, ambulancia, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -69,18 +69,10 @@ var postAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void
             case 2:
                 error_2 = _b.sent();
                 console.log(error_2);
-                name_1 = error_2.name, errors = error_2.errors;
-                if (name_1 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
-                        })];
-                }
-                else {
-                    res.status(500).json({
-                        errors: "Ha ocurrido un error contácte con el administrador"
-                    });
-                }
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con administrador"
+                });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -113,7 +105,8 @@ var eliminarAmbulancia = function (req, res) { return __awaiter(void 0, void 0, 
                 error_3 = _a.sent();
                 console.log(error_3);
                 res.status(500).json({
-                    Errors: "Ha ocurrido un error contáctate con el administrador"
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con administrador"
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -123,7 +116,7 @@ var eliminarAmbulancia = function (req, res) { return __awaiter(void 0, void 0, 
 exports.eliminarAmbulancia = eliminarAmbulancia;
 // actulizar ambulancia 
 var actualizarAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var placa, _a, _b, descripcion, _c, num_vehiculo, amb, ambulancia, error_4, name_2, errors, obj;
+    var placa, _a, _b, descripcion, _c, num_vehiculo, amb, ambulancia, error_4;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
@@ -154,18 +147,10 @@ var actualizarAmbulancia = function (req, res) { return __awaiter(void 0, void 0
             case 4:
                 error_4 = _d.sent();
                 console.log(error_4);
-                name_2 = error_4.name, errors = error_4.errors;
-                if (name_2 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
-                        })];
-                }
-                else {
-                    res.status(500).json({
-                        errors: "Ha ocurrido un error contáctate con el administrador"
-                    });
-                }
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con administrador"
+                });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
         }
@@ -213,7 +198,8 @@ var obtenerAmbulancia = function (req, res) { return __awaiter(void 0, void 0, v
                 error_5 = _c.sent();
                 console.log(error_5);
                 res.status(500).json({
-                    errors: "Ha ocurrido un error contactate con el administrador"
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con administrador"
                 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];

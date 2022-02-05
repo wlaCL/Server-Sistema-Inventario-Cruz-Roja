@@ -24,7 +24,7 @@ export const existeCategoriaID = async(id="")=>{
     console.log(categoria);
     
     if(categoria == null){
-        throw("No se han encontrado registros con el id ingresado")
+        throw("No se han encontrado registros")
     }
 }
 

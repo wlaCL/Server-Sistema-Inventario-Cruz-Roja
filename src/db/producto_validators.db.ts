@@ -9,9 +9,11 @@ export const ExisteProductoNombre = async(nombre = "")=>{
     });
 
     if(producto){
-        throw new Error("Ya existe un producto registrado")
+        throw new Error(`Ya existe un producto registrado con el nombre ${nombre}`)
     }
 }
+
+
 
 export const ExisteTipoProductoID = async(id= "")=>{
     const producto:any = await TProducto.findOne({
@@ -22,10 +24,8 @@ export const ExisteTipoProductoID = async(id= "")=>{
     }); 
 
     if(!producto){
-        throw new Error("No existen registros");
+        throw new Error("El producto no se encuetra registrado");
     }
-
-    console.log( "soy el producto : ", producto);
 
     const categoria = await Categoria.findOne({
         where:{
@@ -34,20 +34,18 @@ export const ExisteTipoProductoID = async(id= "")=>{
         }
     });
 
-    console.log("soy la categoria")
-    
-    if(!producto){
-        throw new Error("No existen registros");
+    if(!categoria){
+        throw new Error("El producto no se encuetra registrado");
     }
-    
 }
 
 //PRODUCTOS CON FECHA DE CADUCIDAD
+//verifica si el producto que se quiere registrar ya está ingresado
 export const existeProductoFechaCaducidad = async(fecha="")=>{
     const producto = await Producto.findOne({
         where: {
             fecha_caducidad:fecha, 
-            disponibilidad:true
+            estado:true
         }
     })
 
@@ -57,15 +55,36 @@ export const existeProductoFechaCaducidad = async(fecha="")=>{
 }
 
 export const existeProductoCaducidadID = async(id="")=>{
-    const producto = await Producto.findOne({
+    const producto:any = await Producto.findOne({
         where: {
             id_producto:id, 
-            disponibilidad:true
+            estado:true
         }
     })
-    console.log(producto);
     if(!producto){
         throw new Error("El producto no se encuentra registrado")
+    }
+
+    const tipo_producto:any = await TProducto.findOne({
+        where:{
+            id_tipoprod: producto.id_tipoprod, 
+            estado: true
+        }
+    })
+
+    if(!tipo_producto){
+        throw new Error(" El producto no se encuentra registro")
+    }
+
+    const categoria = await Categoria.findOne({
+        where:{
+            id_categoria: tipo_producto.id_categoria, 
+            estado: true
+        }
+    });
+
+    if(!categoria){
+        throw new Error("El producto no se encuetra registrado");
     }
 }
 

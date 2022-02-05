@@ -1,8 +1,9 @@
-import { Request, Response } from 'express'; 
-import {Op} from 'sequelize';
+import { Request, Response, urlencoded } from 'express'; 
+import { Op, where } from 'sequelize';
 
 import GenericError from '../models/errors/error';
-import {Categoria, TProducto} from '../associations/producto.associations';
+import {Categoria, TProducto, Producto, Producto_Ambulancia} from '../associations/producto.associations';
+
 
 export const getCategorias = async(req:Request, res: Response) => {
     const {inicio = 0, fin = 3} = req.query; 
@@ -17,9 +18,9 @@ export const getCategorias = async(req:Request, res: Response) => {
         });
 
         if(!categorias){
-            const obj = new GenericError('categorias', "No existen registros")
             return res.status(404).json({
-                errors:obj.ErrorObjt              
+                ok: false, 
+                msg: "No se han encontrado registros"             
             });
         }
 
@@ -32,8 +33,9 @@ export const getCategorias = async(req:Request, res: Response) => {
     } catch(error){
         console.log(error); 
         res.status(500).json({
-            msg: "Ha ocurrido un error contactate con el administrador"
-        })
+            ok: false, 
+            msg: "Ha ocurrido un error contáctate con el administrador",
+        });
     }     
 }
 //buscar una categoria 
@@ -58,9 +60,9 @@ export const getCategoria = async(req: Request, res:Response)=>{
         });
         
         if(rows.length === 0){
-            const obj = new GenericError(nombre, "No existen registros")
             return res.status(404).json({
-                errors:obj.ErrorObjt              
+                ok: false, 
+                msg: "No existen registros"             
             });
         }
     
@@ -92,18 +94,12 @@ export const postCategoria = async(req: Request, res: Response) => {
             categoria
         });
    }catch(error){
-    console.log(error);
-    const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-            errors:obj.ErrorObjt
-            });
-        } else{
-            res.status(500).json({  
-                errors: "Ha ocurrido un error contácte con el administrador"      
-            }); 
-        }  
+    console.log(error); 
+    res.status(500).json({
+        ok: false, 
+        msg: "Ha ocurrido un error contáctate con el administrador",
+    });
+     
     }
 }
 
@@ -132,18 +128,11 @@ export const putCategoria = async(req: Request, res: Response) =>{
             categoria
         });
     }catch(error){
-        console.log(error);
-        const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-            errors:obj.ErrorObjt
-            });
-        } else{
-            res.status(500).json({  
-                errors: "Ha ocurrido un error contácte con el administrador"      
-            }); 
-        }  
+        console.log(error); 
+        res.status(500).json({
+            ok: false, 
+            msg: "Ha ocurrido un error contáctate con el administrador",
+        });  
     }
 }
 
@@ -159,21 +148,19 @@ export const deleteCategoria = async (req: Request, res: Response) =>{
             where:{id_categoria:id}
         });
         
-       const tproducto =  await TProducto.update({
-            estado: false
-        },{where:{
-            id_categoria:id
-        }});
-
-        res.status(200).json({
+    
+        return res.status(200).json({
             ok: true,
             msg: "Eliminación exitosa",
             categoria
-        });
+         });
+        
+        
     }catch(error){
-        console.log(error)
+        console.log(error); 
         res.status(500).json({
-            errors: "Ha ocurrido un errror por favor contactate con el administrador"
+            ok: false, 
+            msg: "Ha ocurrido un error contáctate con el administrador",
         });
     }    
 }

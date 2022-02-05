@@ -21,7 +21,7 @@ router.post('', [
         .isLength({ min: 7, max: 7 }).withMessage("La placa debe contener 7 caracteres")
         .isAlphanumeric().withMessage("La placa solo puede contener letras y números"),
     (0, express_validator_1.check)('placa').custom(ambulancia_validators_db_1.existeAmbulanciaValida),
-    (0, express_validator_1.check)('id_producto').custom(producto_ambulancia_db_1.exiteProductoCaducidad),
+    (0, express_validator_1.check)('id_producto').custom(producto_validators_db_1.existeProductoCaducidadID),
     validar_campos_1.validarCampos,
     validar_campos_producto_ambulancia_1.existeProductoAmbulancia,
     validar_campos_producto_ambulancia_1.verifyCantProductoAmbulancia,
@@ -40,6 +40,7 @@ router.delete('', [
     validar_campos_1.validarCampos,
     validar_campos_producto_ambulancia_1.existRegisterProductAmbulancia
 ], producto_ambulancia_controller_1.deleteProductoAmbulancia);
+// Para el escaneo de QR
 router.get('', [
     (0, express_validator_1.check)('id')
         .isUUID(4).withMessage("El id no es valido"),

@@ -11,13 +11,6 @@ var Reporte = connection_db_1.default.define('reporte', {
         defaultValue: sequelize_1.DataTypes.UUIDV4,
         primaryKey: true
     },
-    id_regisproduc: {
-        type: sequelize_1.DataTypes.UUIDV4,
-        allowNull: false,
-        validate: {
-            msg: "El id del registro del producto es obligatorio"
-        }
-    },
     placa: {
         type: sequelize_1.DataTypes.STRING(7),
         allowNull: false,
@@ -31,14 +24,18 @@ var Reporte = connection_db_1.default.define('reporte', {
         type: sequelize_1.DataTypes.UUIDV4,
         allowNull: false,
         validate: {
-            msg: "El id del encabezado es obligatorio"
+            notNull: {
+                msg: "El id del paramédico es obligatorio"
+            }
         }
     },
     fecha: {
         type: sequelize_1.DataTypes.DATEONLY,
         allowNull: false,
         validate: {
-            msg: "La fecha de registro es obligatoria"
+            notNull: {
+                msg: "La fecha de registro es obligatoria"
+            }
         }
     },
     novedades: {
@@ -48,9 +45,14 @@ var Reporte = connection_db_1.default.define('reporte', {
     base: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: true,
-        validate: {
-            msg: "La base es obligatoria"
-        }
+    },
+    conductor: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true
+    },
+    asistente: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true
     }
 }, {
     timestamps: false,

@@ -4,27 +4,30 @@ var express_1 = require("express");
 var registro_producto_controller_1 = require("../controllers/registro_producto.controller");
 var express_validator_1 = require("express-validator");
 var validar_campos_1 = require("../middlewares/validar_campos");
-var ambulancia_validators_db_1 = require("../db/ambulancia_validators.db");
-var producto_ambulancia_db_1 = require("../db/producto_ambulancia.db");
+var validar_rol_1 = require("../middlewares/validar_rol");
+var validar_jwt_middleware_1 = require("../middlewares/validar_jwt.middleware");
+var validar_campos_reporte_1 = require("../middlewares/validar_campos_reporte");
 var router = (0, express_1.Router)();
 router.post('', [
-    (0, express_validator_1.check)('id_producto')
+    validar_jwt_middleware_1.validarJWT,
+    validar_rol_1.isUserApp,
+    (0, express_validator_1.check)('id')
         .exists().withMessage("El id del producto es obligatorio")
         .isUUID(4).withMessage("El id no es válido")
         .isLength({ min: 36, max: 36 }).withMessage("El id no es válido"),
-    (0, express_validator_1.check)('placa')
-        .exists().withMessage("La placa es obligatoria")
-        .isAlphanumeric().withMessage("La placa solo puede tener números y letras")
-        .isLength({ min: 7, max: 7 }).withMessage("La placa debe tener 7 caracteres entre letras y números"),
     (0, express_validator_1.check)('cant_consumo')
         .exists().withMessage("La cantidad de consumo es obligatoria")
         .isInt({ min: 0 }).withMessage("La cantidad de consumo debe ser mayor o igual a cero"),
-    (0, express_validator_1.check)('fecha')
-        .exists().withMessage("La fecha es obligatoria")
-        .isDate().withMessage("La fecha debe contar con el formato AA/MM/DD"),
-    (0, express_validator_1.check)('placa').custom(ambulancia_validators_db_1.existeAmbulanciaValida),
-    (0, express_validator_1.check)('id_producto').custom(producto_ambulancia_db_1.exiteProductoCaducidad),
-    validar_campos_1.validarCampos
+    (0, express_validator_1.check)('id_reporte')
+        .exists().withMessage("El id del reporte es obligatorio")
+        .isUUID(4).withMessage("Identificador no válido")
+        .isLength({ min: 36, max: 36 }).withMessage("Idetificador no válido"),
+    (0, express_validator_1.check)('carga')
+        .optional({ nullable: true })
+        .isInt({ min: 1 }).withMessage("El valor mínimo de la carga es 1"),
+    validar_campos_1.validarCampos,
+    validar_campos_reporte_1.existeRegistro
 ], registro_producto_controller_1.postRegistroProducto);
+//obtencion de datos de productos por nombre
 exports.default = router;
 //# sourceMappingURL=inventario.route.js.map

@@ -14,7 +14,8 @@ export const getProductos = async (req: Request, res: Response)=>{
                         [Op.endsWith]: termino,                    // LIKE '%hat'
                         [Op.substring]: termino
                     }
-                }
+                },
+                estado: true
             }
         });
 
@@ -33,6 +34,12 @@ export const getProductos = async (req: Request, res: Response)=>{
             productos: rows,
             registros: count        
         })
-    }catch(error){}
+    }catch(error){
+        console.log(error); 
+        res.status(500).json({
+            ok: false, 
+            msg: "Ha ocurrido un error contáctate con el administrador"
+        })
+    }
 }
 

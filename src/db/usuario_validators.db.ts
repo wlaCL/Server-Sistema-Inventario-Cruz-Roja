@@ -3,7 +3,7 @@ import {Usuario, Persona} from '../associations/usuario.associations';
 export const noExistePersona = async(cedula = "" )=>{ 
     const persona = await Persona.findByPk(cedula);
     if(persona){
-        throw new Error(`La cédula ya se encuentra registrada ${cedula}`)        
+        throw new Error(`La cédula ${cedula} ya se encuentra registrada `)        
     }
 }
 

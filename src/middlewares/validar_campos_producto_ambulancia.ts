@@ -2,6 +2,8 @@ import Producto_Ambulancia from '../models/producto_ambulancia';
 import { Request, Response, NextFunction } from 'express';
 import GenericError from '../models/errors/error';
 import { Producto } from '../associations/producto.associations';
+import TProducto from '../models/tipo_producto.model';
+import { where } from 'sequelize';
 
 export const existeProductoAmbulancia = async(req:Request, res:Response, next:NextFunction)=>{  
   const {placa="", id_producto=""} = req.body;
@@ -14,9 +16,9 @@ export const existeProductoAmbulancia = async(req:Request, res:Response, next:Ne
   }); 
 
   if(producto){
-    const obj = new GenericError('id_producto, placa', `El producto ya se encuentra asignado a la placa ${placa}`);
      return  res.status(400).json({
-          errors: obj.ErrorObjt
+          ok: false, 
+          msg: `El produco ya se encuenta asignado a la placa ${placa}`
       })
   }
   next();
@@ -33,9 +35,9 @@ export const verifyCantProductoAmbulancia = async(req:Request, res:Response, nex
     }
   }); 
   if(producto.cantidad < cant_ambulancia){
-    const obj = new GenericError('cantidad', 'Cantidad no puede ser mayor a la registrada incialmente en el producto '); 
     return res.status(400).json({
-      errors: obj.ErrorObj,
+      ok:  false, 
+      msg: "La cantidad no puede ser mayor a la registrada incialmente en el producto"
     });
   }  
   next();
@@ -63,16 +65,16 @@ export const verifySumCantProductoAmbulancia = async (req:Request, res:Response,
 
   const unidad_disponible = producto.cantidad - suma; 
   if(unidad_disponible == 0){
-    const obj = new GenericError('cant_ambulancia', 'No existe stock disponible');
     return res.status(400).json({
-      errors: obj.ErrorObjt
+      ok: false, 
+      msg: "No existe stock disponible"
     });   
   }
   
   if (cant_ambulancia > unidad_disponible){
-    const obj = new GenericError('cant_ambulancia', `Stock disponible ${unidad_disponible}`);
     return res.status(400).json({
-      errors: obj.ErrorObjt
+      ok: false, 
+      msg: `Stock disponible ${unidad_disponible}`
     });    
   }
   next();
@@ -89,10 +91,48 @@ export const existRegisterProductAmbulancia  = async(req:Request, res:Response, 
   }); 
 
   if(!producto){
-    const obj = new GenericError('id_producto, placa', `No existe el producto que intenta eliminar`);
-     return  res.status(400).json({
-          errors: obj.ErrorObjt
+     return  res.status(404).json({
+        ok: false, 
+        msg: "Producto no encontrado"
       })
+  }
+  next();
+
+}
+
+
+export const existeNombreProductoAmbulancia = async(req:Request, res:Response, next: NextFunction)=>{
+  const {id = "", nombre = "", placa=""}= req.body;
+  const producto:any = await TProducto.findOne({
+    include:[
+      {        
+        model:Producto,
+        where:{
+          estado:true,
+        },
+        include:[
+          {
+            model: Producto_Ambulancia, 
+            where:{
+              estado:true, 
+              placa
+            }
+          }
+        ],
+      }
+    ], 
+    where:{
+      estado:true, 
+      nombre,
+    }
+  });
+  console.log(producto)
+  if(producto){
+    res.status(400).json({
+      ok:false, 
+      msg: `El producto ya se encuentra registrado con la placa  ${placa}`,
+      producto
+    })
   }
   next();
 

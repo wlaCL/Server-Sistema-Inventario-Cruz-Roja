@@ -1,7 +1,7 @@
 import { Request, Response} from 'express';
 import {Op } from 'sequelize';
-import {Producto} from '../associations/producto.associations';
-import GenericError from '../models/errors/error';
+import {Producto, Producto_Ambulancia} from '../associations/producto.associations';
+
 
 
 export const postProductoCaducidad = async (req:Request, res: Response) => {
@@ -13,37 +13,43 @@ export const postProductoCaducidad = async (req:Request, res: Response) => {
             fecha_caducidad, 
             cantidad
         })
-        res.status(201).json({
+        res.status(200).json({
             ok:true, 
             msg: "Producto registrado exitósamente",
             producto 
         })
     }catch(error){
         console.log(error);
-        const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-               errors:obj.ErrorObjt
-            });
-        } else{
-            return res.status(500).json({  
-                errors: "Ha ocurrido un error contácte con el administrador"      
-            }); 
-        } 
+       res.status(500).json({
+           ok: false, 
+           msg: "Ha ocurrido un error contáctate con el administrador"
+       })
     }
 }
 
 export const putProductoCaducidad = async (req: Request, res: Response) => {
     const {id} = req.params;
     const {cantidad = ""} = req.body;
-    console.log(cantidad)
     try{        
         const busqueda:any = await Producto.findOne({
             where: {
                 id_producto:id
             }
         });
+
+        const registros_ambulancia:any = await Producto_Ambulancia.findAll({
+            where:{
+                id_producto: id, 
+                estado:true
+            }
+        }); 
+        console.log(registros_ambulancia);
+        if(registros_ambulancia != 0){
+            return res.status(400).json({
+                ok: false, 
+                msg: "No es posible actualizar la cantidad"
+            });
+        }
     
         const producto = await Producto.update({        
             cantidad:(cantidad!="")?cantidad:busqueda.cantidad
@@ -51,11 +57,11 @@ export const putProductoCaducidad = async (req: Request, res: Response) => {
             where: {id_producto:id}
         });
         
-        if(producto[0]==0){
-            const obj = new GenericError('', 'No se registraron cambios'); 
+        if(producto[0]==0){           
             return res.status(400).json({
-                errors: obj.ErrorObj
-            })
+               ok: false, 
+               msg: "No se registraron cambios"
+            });
         }
         res.status(200).json({
             ok: true,
@@ -75,7 +81,7 @@ export const putProductoCaducidad = async (req: Request, res: Response) => {
 export const deleteProductoCaducidad = async (req: Request, res: Response) => {
     const {id} = req.params; 
     const producto = await Producto.update({
-        disponibilidad:false
+        estado:false
     },{
         where:{
             id_producto:id
@@ -88,4 +94,5 @@ export const deleteProductoCaducidad = async (req: Request, res: Response) => {
        producto
    })
 }
+
 

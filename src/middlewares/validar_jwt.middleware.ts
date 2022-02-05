@@ -1,52 +1,65 @@
-//const { request, response } = require("express");
-//const jwt = require('jsonwebtoken');
-//import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { Persona } from '../models/models';
-import { NextFunction,Response} from "express";
-import { IGetUserAuthInfoRequest } from '../utils/request.util';
+import { NextFunction,Response, Request} from "express";
 
-export const validarJWT = async(req:IGetUserAuthInfoRequest, res:Response, next:NextFunction)=> {
-    //const token = req.header('x-token');
+export const validarJWT = async(req:Request, res:Response, next:NextFunction)=> {
+    //const token = req.headers('x-token');
     const token = req.header('x-token');
-    console.log(token);
-
-
+    let identificador:any;
     if(!token){
         return res.status(401).json({
-            msg: "No hay token en la petición"
+            errors:{
+                ok: false, 
+                msg: "No hay token en la petición"                
+            }
         });
     }
    
 
     try{
         console.log('1');
-        const {cedula}:any = jwt.verify(token, 'q7497437_U&#UEOUEW@$%');
+        let id: any; 
 
-        //console.log(jwt.verify('vi', token, process.env.SECRETORPRIVATEKEY))
-        //console.log('1');
-
-        const id = cedula;
-        const usuario:any = await Persona.findByPk(id)
-        req.user= usuario;
-        console.log(usuario)
+        try{
+            id = jwt.verify(token, 'q7497437_U&#UEOUEW@$%');
+            const{cedula} = id;
+            identificador = cedula;
+           
+        }catch(error){
+            return res.status(401).json({
+                errors:{
+                    ok: false, 
+                    msg: "Token no válido"
+                }
+            });
+        }
+      
+        req.user = identificador;
+        const usuario:any = await Persona.findByPk(identificador);
         if(!usuario){
             return res.status(401).json({
-                msg: 'Token no válido -- no se encuentra registrado en la base de datos'
+                ok: false,
+                msg: 'Token no válido'
             });
         }
         
         if(!usuario.estado){
             return res.status(401).json({
-                msg: 'Token no válido -- eliminado'
+                errors:{
+                    ok: false, 
+                    msg: "token no valido"                
+                }
             });
         }
 
-
-        //req.usuario = usuario;
-        //req.uid = uid;
-        
     }catch(error){
+        console.log(error)
+        res.status(500).json({
+            errors:{
+                ok:false, 
+                msg:"Ha ocurrido un error contáctate con el administrador"
+            }
+        })
 
     }
     next();

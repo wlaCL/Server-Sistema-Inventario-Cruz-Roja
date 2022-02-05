@@ -35,37 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validarCedula = exports.AlmenosUnCampo = exports.tamanoContrasena = void 0;
-var error_1 = __importDefault(require("../models/errors/error"));
-var tamanoContrasena = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, contrasena, obj;
-    return __generator(this, function (_b) {
-        _a = req.body.contrasena, contrasena = _a === void 0 ? "" : _a;
-        if (contrasena != "") {
-            if (contrasena.length < 10) {
-                obj = new error_1.default(contrasena, "La contraseña debe al menos tener 10 caracteres");
-                return [2 /*return*/, res.status(422).json({
-                        errors: obj.ErrorObj
-                    })];
-            }
-        }
-        next();
-        return [2 /*return*/];
-    });
-}); };
-exports.tamanoContrasena = tamanoContrasena;
+exports.AlmenosUnCampo = void 0;
 var AlmenosUnCampo = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, nombre, _c, apellido, _d, rol, _e, estado, obj;
+    var _a, _b, nombre, _c, apellido, _d, rol, _e, estado;
     return __generator(this, function (_f) {
         _a = req.body, _b = _a.nombre, nombre = _b === void 0 ? "" : _b, _c = _a.apellido, apellido = _c === void 0 ? "" : _c, _d = _a.rol, rol = _d === void 0 ? "" : _d, _e = _a.estado, estado = _e === void 0 ? "" : _e;
-        if (nombre === "" && apellido === "" && estado === "" && rol === "") {
-            obj = new error_1.default(" nombre = ?, apellido = ?, rol = ?, estado = ? ", "No se detecto datos actualizar");
+        if (nombre == "" && apellido == "" && estado == "" && rol == "") {
             return [2 /*return*/, res.status(422).json({
-                    errors: obj.ErrorObj
+                    ok: false,
+                    msg: "No existen campos para actualizar"
                 })];
         }
         next();
@@ -73,12 +52,4 @@ var AlmenosUnCampo = function (req, res, next) { return __awaiter(void 0, void 0
     });
 }); };
 exports.AlmenosUnCampo = AlmenosUnCampo;
-var validarCedula = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cedula;
-    return __generator(this, function (_a) {
-        cedula = req.body.cedula;
-        return [2 /*return*/];
-    });
-}); };
-exports.validarCedula = validarCedula;
 //# sourceMappingURL=validar_campos_usuario.js.map

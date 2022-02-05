@@ -47,7 +47,7 @@ var exiteProductoCaducidad = function (id) {
                 case 0: return [4 /*yield*/, producto_associations_1.Producto.findOne({
                         where: {
                             id_producto: id,
-                            disponibilidad: true
+                            estado: true
                         }
                     })];
                 case 1:

@@ -35,75 +35,67 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRegistroProducto = void 0;
 var producto_associations_1 = require("../associations/producto.associations");
 var inventario_associations_1 = require("../associations/inventario.associations");
-var error_1 = __importDefault(require("../models/errors/error"));
 var postRegistroProducto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id_producto, placa, fecha, cant_consumo, producto, obj, obj, registro, error_2;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var _a, _b, id, _c, id_reporte, _d, cant_consumo, _e, carga, producto, registro, error_1;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
             case 0:
-                _a = req.body, id_producto = _a.id_producto, placa = _a.placa, fecha = _a.fecha, cant_consumo = _a.cant_consumo;
-                _b.label = 1;
+                _a = req.body, _b = _a.id, id = _b === void 0 ? "" : _b, _c = _a.id_reporte, id_reporte = _c === void 0 ? "" : _c, _d = _a.cant_consumo, cant_consumo = _d === void 0 ? 0 : _d, _e = _a.carga, carga = _e === void 0 ? 0 : _e;
+                _f.label = 1;
             case 1:
-                _b.trys.push([1, 5, , 6]);
+                _f.trys.push([1, 5, , 6]);
                 return [4 /*yield*/, producto_associations_1.Producto_Ambulancia.findOne({
                         where: {
-                            id_producto: id_producto,
-                            placa: placa,
+                            id_producambu: id,
                             estado: true
                         }
                     })];
             case 2:
-                producto = _b.sent();
+                producto = _f.sent();
                 if (!producto) {
-                    obj = new error_1.default("No existen registros", "No se han encontrado registros con los datos ingresados");
                     return [2 /*return*/, res.status(404).json({
-                            errors: obj.ErrorObjt
+                            oK: false,
+                            msg: "No se han encontrado registros con los datos ingresados"
                         })];
                 }
-                console.log(producto);
                 if (producto.stock == 0 || producto.stock < cant_consumo) {
-                    obj = new error_1.default("Stock", "No existe stock disponible para el registro. Stock disponible:  " + producto.stock);
                     return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObjt
+                            ok: false,
+                            msg: "No existe stock disponible para el registro. Stock disponible: " + producto.stock
                         })];
                 }
                 return [4 /*yield*/, inventario_associations_1.Registro_Producto.create({
                         id_producambu: producto.id_producambu,
-                        placa: placa,
-                        fecha_registro: fecha,
-                        cant_consumo: cant_consumo
+                        cant_consumo: cant_consumo,
+                        carga: carga,
+                        id_reporte: id_reporte
                     })];
             case 3:
-                registro = _b.sent();
+                registro = _f.sent();
                 return [4 /*yield*/, producto_associations_1.Producto_Ambulancia.update({
-                        stock: producto.stock - cant_consumo
+                        stock: producto.stock - cant_consumo + carga
                     }, {
                         where: {
                             id_producambu: producto.id_producambu
                         }
                     })];
             case 4:
-                _b.sent();
+                _f.sent();
                 return [2 /*return*/, res.status(201).json({
                         ok: true,
                         msg: "Registro éxitoso",
                         registro: registro
                     })];
             case 5:
-                error_2 = _b.sent();
-                console.log(error_2);
+                error_1 = _f.sent();
+                console.log(error_1);
                 res.status(500).json({
-                    errors: {
-                        ok: false,
-                        msg: "Ha ocurrido un error contáctate con el administrador"
-                    }
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
                 });
                 return [3 /*break*/, 6];
             case 6: return [2 /*return*/];

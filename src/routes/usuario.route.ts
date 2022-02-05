@@ -1,14 +1,18 @@
 import { Router } from "express";
 import { check } from "express-validator";
 import { postUsuario, deleteUsuario, actualizarUsuario, getUsuario, getUsuarios } from '../controllers/usuario.controller';
-import { AlmenosUnCampo, tamanoContrasena } from '../middlewares/validar_campos_usuario';
+import { AlmenosUnCampo} from '../middlewares/validar_campos_usuario';
 import { validarCampos } from '../middlewares/validar_campos';
 import { existeUsuario, noExistePersona, usuarioActivo } from '../db/usuario_validators.db';
+import { validarJWT } from '../middlewares/validar_jwt.middleware';
+import { isUserWeb } from '../middlewares/validar_rol';
 
 const router = Router(); 
 
 //crear usuario
 router.post('', [   
+    validarJWT,
+    isUserWeb,
     check('cedula')
         .exists().withMessage('El cedula es obligatoria')
         .isNumeric().withMessage('La cédula debe contener solo numeros')
@@ -28,11 +32,14 @@ router.post('', [
     check('contrasena')
         .exists().withMessage("La contraseña es obligatoria")
         .isLength({min:10}).withMessage("La constraseña debe tener un un mínimo de 10 caracteres"),
-    validarCampos,   
+    check('cedula').custom(noExistePersona),
+    validarCampos,       
 ],postUsuario);
 
 // eliminar usuario
-router.delete('/:cedula',[    
+router.delete('/:cedula',[
+    validarJWT,   
+    isUserWeb, 
     check('cedula')
         .exists().withMessage('La cedula es obligatoria'),
     check('cedula').custom(existeUsuario),
@@ -42,7 +49,8 @@ router.delete('/:cedula',[
 
 //actualizar datos de usuario 
 router.put('/:cedula', [
-    AlmenosUnCampo,     
+    validarJWT,
+    isUserWeb,       
     check('cedula')
         .exists().withMessage("La cédula es obligatoria")
         .isNumeric().withMessage("La cédula debe contener solo números")
@@ -61,11 +69,13 @@ router.put('/:cedula', [
     check('cedula').custom(usuarioActivo),   
     check('cedula').custom(existeUsuario), 
     validarCampos,    
-    //tamanoContrasena 
+    AlmenosUnCampo, 
 ],actualizarUsuario);
 
 //Obtener dartos del usuario
 router.get('/:cedula',[
+    validarJWT,
+    isUserWeb,
     check('cedula')
         .exists().withMessage("La cédula es obligatoria"),
     check('cedula')
@@ -80,6 +90,8 @@ getUsuario)
 
 //buscar usuario 
 router.get('',[
+    validarJWT,
+    isUserWeb,
     check('nombre')
         .optional({nullable: true})
         .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),

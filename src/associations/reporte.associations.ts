@@ -16,6 +16,6 @@ Ambulancia.belongsToMany(Persona, {
 Trabaja.hasOne(Reporte, {foreignKey: "id_trabaja"}); 
 Reporte.belongsTo(Trabaja, {foreignKey: 'id_trabaja'});
 
-Registro_Producto.hasOne(Reporte, {foreignKey:'id_regisproduc'});
-Reporte.belongsTo(Registro_Producto, {foreignKey: 'id_regisproduc' })
+Reporte.hasMany(Registro_Producto, {foreignKey: 'id_reporte'});
+Registro_Producto.belongsTo(Reporte, {foreignKey: 'id_reporte'});
 export {Persona, Ambulancia, Trabaja, Registro_Producto, Reporte}

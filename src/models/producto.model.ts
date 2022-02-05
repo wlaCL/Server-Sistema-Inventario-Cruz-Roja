@@ -34,7 +34,7 @@ const Producto = db.define('producto', {
     cantidad:{
      type: DataTypes.INTEGER, 
     }, 
-    disponibilidad:{
+    estado:{
         type:DataTypes.BOOLEAN,
         defaultValue:true,
         allowNull:false, 

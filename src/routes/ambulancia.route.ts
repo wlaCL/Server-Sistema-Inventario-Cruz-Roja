@@ -1,13 +1,17 @@
 import { Router} from "express";
 import { check } from "express-validator";
 import { postAmbulancia, eliminarAmbulancia, actualizarAmbulancia, obtenerAmbulancia, obtenerAmbulancias } from '../controllers/ambulancia.controller';
-import { validarCampos } from "../middlewares/validar_campos";
+import { validarCampos } from '../middlewares/validar_campos';
 import { exiteAmbulanciaPlaca, existeAmbulanciaNumVehiculo, existeAmbulanciaValida } from '../db/ambulancia_validators.db';
 import { validarCamposAmbulancia } from '../middlewares/validar_campos_ambulancia';
+import { validarJWT } from '../middlewares/validar_jwt.middleware';
+import { isUserWeb } from '../middlewares/validar_rol';
 
 const router = Router(); 
 
 router.post('', [
+    validarJWT,
+    isUserWeb,
     check('placa')
         .exists().withMessage("La placa es obligatoria")
         .isAlphanumeric().withMessage("La placa solo puede contener letras y números")
@@ -23,6 +27,8 @@ router.post('', [
 ], postAmbulancia);
 
 router.delete('/:placa',[
+    validarJWT,
+    isUserWeb,
     check('placa')
         .exists().withMessage("La placa es obligatoria")
         .isAlphanumeric().withMessage("La placa solo puede contener letras y números")
@@ -34,6 +40,8 @@ router.delete('/:placa',[
 
 //actualizar datos de ambulancia
 router.put('/:placa', [
+    validarJWT,
+    isUserWeb,
     check('placa')
     .exists().withMessage("La placa es obligatoria")
     .isAlphanumeric().withMessage("La placa solo puede contener letras y números")
@@ -49,8 +57,12 @@ router.put('/:placa', [
 ], actualizarAmbulancia)
 
 //obtener datos de ambulancia
-router.get('/:termino', obtenerAmbulancia); 
+router.get('/:termino',[
+    validarJWT,
+    isUserWeb,
+    validarCampos, 
+], obtenerAmbulancia); 
 
-router.get('', obtenerAmbulancias);
+router.get('',[validarJWT, validarCampos], obtenerAmbulancias);
 
 export default router; 

@@ -35,16 +35,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCategoria = exports.putCategoria = exports.postCategoria = exports.getCategoria = exports.getCategorias = void 0;
 var sequelize_1 = require("sequelize");
-var error_1 = __importDefault(require("../models/errors/error"));
 var producto_associations_1 = require("../associations/producto.associations");
 var getCategorias = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, inicio, _c, fin, categorias, obj, error_2;
+    var _a, _b, inicio, _c, fin, categorias, error_1;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
@@ -63,9 +59,9 @@ var getCategorias = function (req, res) { return __awaiter(void 0, void 0, void 
             case 2:
                 categorias = _d.sent();
                 if (!categorias) {
-                    obj = new error_1.default('categorias', "No existen registros");
                     return [2 /*return*/, res.status(404).json({
-                            errors: obj.ErrorObjt
+                            ok: false,
+                            msg: "No se han encontrado registros"
                         })];
                 }
                 return [2 /*return*/, res.status(200).json({
@@ -74,10 +70,11 @@ var getCategorias = function (req, res) { return __awaiter(void 0, void 0, void 
                         registros: categorias.count,
                     })];
             case 3:
-                error_2 = _d.sent();
-                console.log(error_2);
+                error_1 = _d.sent();
+                console.log(error_1);
                 res.status(500).json({
-                    msg: "Ha ocurrido un error contactate con el administrador"
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador",
                 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -87,7 +84,7 @@ var getCategorias = function (req, res) { return __awaiter(void 0, void 0, void 
 exports.getCategorias = getCategorias;
 //buscar una categoria 
 var getCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nombre, _a, _b, inicio, _c, fin, _d, rows, count, obj, error_3;
+    var nombre, _a, _b, inicio, _c, fin, _d, rows, count, error_2;
     var _e, _f;
     return __generator(this, function (_g) {
         switch (_g.label) {
@@ -114,9 +111,9 @@ var getCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
             case 2:
                 _d = _g.sent(), rows = _d.rows, count = _d.count;
                 if (rows.length === 0) {
-                    obj = new error_1.default(nombre, "No existen registros");
                     return [2 /*return*/, res.status(404).json({
-                            errors: obj.ErrorObjt
+                            ok: false,
+                            msg: "No existen registros"
                         })];
                 }
                 res.status(200).json({
@@ -126,8 +123,8 @@ var getCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
                 });
                 return [3 /*break*/, 4];
             case 3:
-                error_3 = _g.sent();
-                console.log(error_3);
+                error_2 = _g.sent();
+                console.log(error_2);
                 res.status(500).json({
                     msg: "Ha ocurrido un error contáctate con el administrador"
                 });
@@ -138,7 +135,7 @@ var getCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
 }); };
 exports.getCategoria = getCategoria;
 var postCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, nombre, descripcion, categoria, error_4, name_1, errors, obj;
+    var _a, nombre, descripcion, categoria, error_3;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -159,20 +156,12 @@ var postCategoria = function (req, res) { return __awaiter(void 0, void 0, void 
                 });
                 return [3 /*break*/, 4];
             case 3:
-                error_4 = _b.sent();
-                console.log(error_4);
-                name_1 = error_4.name, errors = error_4.errors;
-                if (name_1 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
-                        })];
-                }
-                else {
-                    res.status(500).json({
-                        errors: "Ha ocurrido un error contácte con el administrador"
-                    });
-                }
+                error_3 = _b.sent();
+                console.log(error_3);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador",
+                });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -181,7 +170,7 @@ var postCategoria = function (req, res) { return __awaiter(void 0, void 0, void 
 exports.postCategoria = postCategoria;
 //se necesita recibir los parametros
 var putCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, _b, _c, nombre, _d, descripcion, categoria, error_5, name_2, errors, obj;
+    var _a, id, _b, _c, nombre, _d, descripcion, categoria, error_4;
     return __generator(this, function (_e) {
         switch (_e.label) {
             case 0:
@@ -213,20 +202,12 @@ var putCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
                 });
                 return [3 /*break*/, 5];
             case 4:
-                error_5 = _e.sent();
-                console.log(error_5);
-                name_2 = error_5.name, errors = error_5.errors;
-                if (name_2 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
-                        })];
-                }
-                else {
-                    res.status(500).json({
-                        errors: "Ha ocurrido un error contácte con el administrador"
-                    });
-                }
+                error_4 = _e.sent();
+                console.log(error_4);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador",
+                });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
         }
@@ -235,14 +216,14 @@ var putCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0
 exports.putCategoria = putCategoria;
 //falta un estado para la eliminacipon 
 var deleteCategoria = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, categoria, tproducto, error_6;
+    var _a, id, categoria, error_5;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _a = req.params.id, id = _a === void 0 ? "" : _a;
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 4, , 5]);
+                _b.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, producto_associations_1.Categoria.update({
                         estado: false,
                     }, {
@@ -250,27 +231,20 @@ var deleteCategoria = function (req, res) { return __awaiter(void 0, void 0, voi
                     })];
             case 2:
                 categoria = _b.sent();
-                return [4 /*yield*/, producto_associations_1.TProducto.update({
-                        estado: false
-                    }, { where: {
-                            id_categoria: id
-                        } })];
+                return [2 /*return*/, res.status(200).json({
+                        ok: true,
+                        msg: "Eliminación exitosa",
+                        categoria: categoria
+                    })];
             case 3:
-                tproducto = _b.sent();
-                res.status(200).json({
-                    ok: true,
-                    msg: "Eliminación exitosa",
-                    categoria: categoria
-                });
-                return [3 /*break*/, 5];
-            case 4:
-                error_6 = _b.sent();
-                console.log(error_6);
+                error_5 = _b.sent();
+                console.log(error_5);
                 res.status(500).json({
-                    errors: "Ha ocurrido un errror por favor contactate con el administrador"
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador",
                 });
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); };

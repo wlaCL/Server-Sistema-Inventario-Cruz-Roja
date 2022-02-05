@@ -42,17 +42,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUsuarios = exports.getUsuario = exports.actualizarUsuario = exports.deleteUsuario = exports.postUsuario = void 0;
 var sequelize_1 = require("sequelize");
 var usuario_associations_1 = require("../associations/usuario.associations");
-var error_1 = __importDefault(require("../models/errors/error"));
+var bcryptjs_1 = __importDefault(require("bcryptjs"));
 //crear usuario
 var postUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, nombre, _c, apellido, _d, cedula, _e, rol, _f, contrasena, usuario, persona, error_2, name_1, errors, obj;
+    var _a, _b, nombre, _c, apellido, _d, cedula, _e, rol, _f, contrasena, usuario, persona, salt, password, error_1;
     return __generator(this, function (_g) {
         switch (_g.label) {
             case 0:
                 _a = req.body, _b = _a.nombre, nombre = _b === void 0 ? "" : _b, _c = _a.apellido, apellido = _c === void 0 ? "" : _c, _d = _a.cedula, cedula = _d === void 0 ? "" : _d, _e = _a.rol, rol = _e === void 0 ? "" : _e, _f = _a.contrasena, contrasena = _f === void 0 ? "" : _f;
                 _g.label = 1;
             case 1:
-                _g.trys.push([1, 7, , 8]);
+                _g.trys.push([1, 5, , 6]);
                 return [4 /*yield*/, usuario_associations_1.Persona.create({
                         cedula: cedula,
                         nombre: nombre,
@@ -60,59 +60,43 @@ var postUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     })];
             case 2:
                 persona = _g.sent();
-                if (rol == "" && contrasena == "") {
-                    return [2 /*return*/, res.status(201).json({
-                            ok: true,
-                            msg: "Personal registrado exitosamente",
-                            usuario: persona
-                        })];
-                }
-                if (!(rol != "")) return [3 /*break*/, 4];
                 return [4 /*yield*/, usuario_associations_1.Usuario.create({
                         cedula: cedula,
                         roles_sistema: rol
                     })];
             case 3:
                 usuario = _g.sent();
-                _g.label = 4;
-            case 4:
-                if (!(contrasena != "")) return [3 /*break*/, 6];
+                salt = bcryptjs_1.default.genSaltSync();
+                password = bcryptjs_1.default.hashSync(contrasena, salt);
                 return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.create({
                         id_usuario: usuario.id_usuario,
-                        contrasena: contrasena
+                        contrasena: password
+                    })];
+            case 4:
+                _g.sent();
+                return [2 /*return*/, res.status(201).json({
+                        ok: true,
+                        msg: "Usuario registrado exitosamente",
+                        usuario: persona
                     })];
             case 5:
-                _g.sent();
-                _g.label = 6;
-            case 6: return [2 /*return*/, res.status(201).json({
-                    ok: true,
-                    msg: "Usuario registrado exitosamente",
-                    usuario: persona
-                })];
-            case 7:
-                error_2 = _g.sent();
-                console.log(error_2);
-                name_1 = error_2.name, errors = error_2.errors;
-                if (name_1 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
-                        })];
-                }
-                else {
-                    res.status(500).json({
-                        errors: "Ha ocurrido un error contácte con el administrador"
-                    });
-                }
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                error_1 = _g.sent();
+                console.log(error_1);
+                res.status(500).json({
+                    errors: {
+                        ok: false,
+                        msg: "Ha ocurrido un error contáctate con el administrador"
+                    }
+                });
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); };
 exports.postUsuario = postUsuario;
 //eliminar el usuario
 var deleteUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cedula, persona, error_3;
+    var cedula, persona, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -134,13 +118,13 @@ var deleteUsuario = function (req, res) { return __awaiter(void 0, void 0, void 
                 }
                 res.status(200).json({
                     ok: true,
-                    msg: 'Personal desactivado exitósamente',
+                    msg: 'Usuario eliminado exitósamente',
                     persona: persona
                 });
                 return [3 /*break*/, 3];
             case 2:
-                error_3 = _a.sent();
-                console.log(error_3);
+                error_2 = _a.sent();
+                console.log(error_2);
                 res.status(500).json({
                     msg: "Ha ocurrido un error contáctate con el administrador"
                 });
@@ -260,7 +244,7 @@ export const deleteUsuario = async(req: Request, res: Response)=>{
 }*/
 //actulizar datos
 var actualizarUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, cedula, _b, _c, nombre, _d, apellido, _e, rol, personadb, persona, obj, error_4, name_2, errors, obj;
+    var _a, cedula, _b, _c, nombre, _d, apellido, _e, rol, personadb, persona, usuario, user, error_3;
     return __generator(this, function (_f) {
         switch (_f.label) {
             case 0:
@@ -268,7 +252,7 @@ var actualizarUsuario = function (req, res) { return __awaiter(void 0, void 0, v
                 _b = req.body, _c = _b.nombre, nombre = _c === void 0 ? "" : _c, _d = _b.apellido, apellido = _d === void 0 ? "" : _d, _e = _b.rol, rol = _e === void 0 ? "" : _e;
                 _f.label = 1;
             case 1:
-                _f.trys.push([1, 4, , 5]);
+                _f.trys.push([1, 6, , 7]);
                 return [4 /*yield*/, usuario_associations_1.Persona.findOne({
                         where: {
                             cedula: cedula
@@ -279,7 +263,6 @@ var actualizarUsuario = function (req, res) { return __awaiter(void 0, void 0, v
                 return [4 /*yield*/, usuario_associations_1.Persona.update({
                         nombre: (nombre != "") ? nombre : personadb.nombre,
                         apellido: (apellido != "") ? apellido : personadb.apellido,
-                        rol: (rol != "") ? rol : personadb.rol,
                     }, {
                         where: {
                             cedula: cedula
@@ -287,40 +270,54 @@ var actualizarUsuario = function (req, res) { return __awaiter(void 0, void 0, v
                     })];
             case 3:
                 persona = _f.sent();
-                if (persona[0] == 0) {
-                    obj = new error_1.default('No hay campos para actualizar', "No registraron cambios");
-                    return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObj
-                        })];
-                }
-                return [2 /*return*/, res.status(200).json({
-                        ok: true,
-                        msg: "Actualización exitosa",
-                        registros_actualizados: persona[0]
+                return [4 /*yield*/, usuario_associations_1.Usuario.findOne({
+                        where: {
+                            cedula: cedula
+                        }
                     })];
             case 4:
-                error_4 = _f.sent();
-                console.log(error_4);
-                name_2 = error_4.name, errors = error_4.errors;
-                if (name_2 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
+                usuario = _f.sent();
+                return [4 /*yield*/, usuario_associations_1.Usuario.update({
+                        roles_sistema: (rol == "") ? usuario.roles_sistema : rol
+                    }, { where: {
+                            cedula: cedula
+                        } })];
+            case 5:
+                user = _f.sent();
+                if (user == 0) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "No se registraron cambios",
                         })];
                 }
-                else {
-                    res.status(500).json({
-                        errors: "Ha ocurrido un error contácte con el administrador"
-                    });
+                if (user == 0 && persona == 0) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "No se registraron cambios",
+                        })];
                 }
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                res.status(200).json({
+                    ok: true,
+                    msg: "Actualización exitosa",
+                });
+                return [3 /*break*/, 7];
+            case 6:
+                error_3 = _f.sent();
+                console.log(error_3);
+                res.status(500).json({
+                    errors: {
+                        ok: false,
+                        msg: "Ha ocurrido un error contáctate con el administrador"
+                    }
+                });
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); };
 exports.actualizarUsuario = actualizarUsuario;
 var getUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cedula, usuario, error_5;
+    var cedula, usuario, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -335,8 +332,8 @@ var getUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                         usuario: usuario
                     })];
             case 2:
-                error_5 = _a.sent();
-                console.log(error_5);
+                error_4 = _a.sent();
+                console.log(error_4);
                 res.status(500).json({
                     errors: "Ha ocurrido un error contácte con el administrador"
                 });
@@ -347,7 +344,7 @@ var getUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.getUsuario = getUsuario;
 var getUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, nombre, _c, apellido, personas, error_6;
+    var _a, _b, nombre, _c, apellido, personas, error_5;
     var _d, _e, _f, _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
@@ -374,6 +371,7 @@ var getUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0,
                                         _h),
                                     _g)
                             },
+                            _d.estado = true,
                             _d)
                     })];
             case 2:
@@ -382,7 +380,6 @@ var getUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     return [2 /*return*/, res.status(400).json({
                             ok: false,
                             msg: 'No se encontraron registros',
-                            personas: []
                         })];
                 }
                 res.status(200).json({
@@ -392,8 +389,8 @@ var getUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 });
                 return [3 /*break*/, 4];
             case 3:
-                error_6 = _j.sent();
-                console.log(error_6);
+                error_5 = _j.sent();
+                console.log(error_5);
                 res.status(500).json({
                     ok: false,
                     msg: "Ha ocurrido un error contáctate con el administrador",

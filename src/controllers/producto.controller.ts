@@ -1,6 +1,6 @@
 import { Request, Response} from 'express';
 import {Op, where } from 'sequelize';
-import { TProducto, Unidad_Medida, Producto} from '../associations/producto.associations';
+import { TProducto, Unidad_Medida, Producto, Categoria, Producto_Ambulancia} from '../associations/producto.associations';
 import GenericError from '../models/errors/error';
 
 
@@ -131,7 +131,6 @@ export const putProducto = async(req: Request, res: Response)=>{
 //eliminar producto 
 export const deleteProducto = async(req: Request, res: Response) =>{
     const {id= ""} = req.params; 
-    console.log(id);
     try{
         
         const producto:any = await TProducto.update({
@@ -143,15 +142,15 @@ export const deleteProducto = async(req: Request, res: Response) =>{
         }); 
 
         
-        if(producto[0] == 0) {
-            const obj = new GenericError('id', "No se encontraron registros");
+        if(producto == 0) {
             return res.status(404).json({
-               errors: obj.ErrorObj
+               ok: false, 
+               msg: "No se encontraron registros"
             })
         }
 
         const productos = await Producto.update({
-            disponibilidad: false
+            estado: false
         },{
             where:{
                 id_tipoprod:id
@@ -181,27 +180,44 @@ export const deleteProducto = async(req: Request, res: Response) =>{
 
 }
 
-//obtener producto 
-export const getProducto = async(req: Request, res: Response)=>{
+//obtener todos los productos
+export const getProductoTodos = async(req: Request, res: Response)=>{
     try{
-        const {id= ""}:any = req.params;  
-        const producto = await TProducto.findOne({
+        const resultado:any = await TProducto.findAndCountAll({
+            include:[
+                {
+                    model: Categoria,
+                    attributes:['nombre', 'descripcion'], 
+                    where:{
+                        estado: true
+                    },
+                    
+                },
+
+                {
+                    model: Producto, 
+                    where:{
+                        estado: true
+                    }
+                }
+            ],
             where: {
-                id_tipoprod: id
+                estado: true
             }
         });
 
-        if(!producto) {
-            const obj = new GenericError('id', "No se encontraron registros");
+        if(resultado.rows == 0) {
             return res.status(404).json({
-               errors: obj.ErrorObj
+               ok: false, 
+               msg: "No se encontraron registros"
             })
         }
 
         res.status(200).json({
             ok: true,
             msg: "Búsqueda exitosa", 
-            producto
+            productos: resultado.rows, 
+            registros: resultado.count
         })
     }catch(error){
         console.log(error); 
@@ -212,13 +228,38 @@ export const getProducto = async(req: Request, res: Response)=>{
     
 }
 
-//consultar productos  POR VERIFICAR
+//consultar productos por nombre
 export const getProductos = async (req: Request, res: Response)=>{
     const {termino}  = req.params;
     const {inicio= 0, fin = 3} = req.query
+    let resultado:any;
 
     try{
-        const {rows, count}:any = await TProducto.findAndCountAll({
+        resultado = await TProducto.findAndCountAll({
+            include:[
+                {
+                    model: Categoria,
+                    attributes:['nombre', 'descripcion'], 
+                    where:{
+                        estado: true
+                    }
+                },
+                {
+                    model: Producto, 
+                    attributes:['id_producto', 'fecha_caducidad', 'cantidad'], 
+                    where:{
+                        estado: true
+                    }, 
+                    include:[
+                        {
+                            model: Producto_Ambulancia, 
+                            where:{
+                                estado:true
+                            }
+                        }
+                    ]
+                }
+            ],
             where: {
                 nombre:{
                     [Op.or]:{
@@ -233,21 +274,97 @@ export const getProductos = async (req: Request, res: Response)=>{
             limit: Number(fin)
         });
 
-        console.log(rows, count);
 
-        if(rows == 0){
+        if(resultado.rows != 0){
+           return res.status(200).json({
+                ok: true,
+                msg: "Búsqueda éxitosa",
+                productos: resultado.rows,
+                registros: resultado.count        
+            })
+        }
+
+        resultado = await TProducto.findAndCountAll({
+            include:[
+                {
+                    model: Categoria,
+                    attributes:['nombre', 'descripcion'], 
+                    where:{
+                        estado: true
+                    }
+                },
+                {
+                    model: Producto, 
+                    attributes:['id_producto', 'fecha_caducidad', 'cantidad'], 
+                    where:{
+                        estado: true
+                    }, 
+                }
+            ],
+            where: {
+                nombre:{
+                    [Op.or]:{
+                        [Op.startsWith]: termino,                  // LIKE 'hat%'
+                        [Op.endsWith]: termino,                    // LIKE '%hat'
+                        [Op.substring]: termino
+                    }
+                },
+                estado: true
+            },
+            offset: Number(inicio),
+            limit: Number(fin)
+        });
+
+        if(resultado.rows != 0){
+            return res.status(200).json({
+                 ok: true,
+                 msg: "Búsqueda éxitosa",
+                 productos: resultado.rows,
+                 registros: resultado.count        
+             })
+         }     
+        
+
+         resultado = await TProducto.findAndCountAll({
+            include:[
+                {
+                    model: Categoria,
+                    attributes:['nombre', 'descripcion'], 
+                    where:{
+                        estado: true
+                    }
+                },
+            ],
+            where: {
+                nombre:{
+                    [Op.or]:{
+                        [Op.startsWith]: termino,                  // LIKE 'hat%'
+                        [Op.endsWith]: termino,                    // LIKE '%hat'
+                        [Op.substring]: termino
+                    }
+                },
+                estado: true
+            },
+            offset: Number(inicio),
+            limit: Number(fin)
+        });
+
+        if(resultado.rows == 0){
             return res.status(404).json({
                 ok: false,
-                msg: "No se encontraron registros"
-            })
+                msg: "No se encontraron registros",       
+            });
         }
 
         res.status(200).json({
             ok: true,
             msg: "Búsqueda éxitosa",
-            productos: rows,
-            registros: count        
-        })
+            productos: resultado.rows,
+            registros: resultado.count        
+        }) 
+     
+      
+        
     }catch(error){
         console.log(error); 
         res.status(500).json({

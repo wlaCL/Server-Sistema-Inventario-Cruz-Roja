@@ -53,7 +53,7 @@ var ExisteProductoNombre = function (nombre) {
                 case 1:
                     producto = _a.sent();
                     if (producto) {
-                        throw new Error("Ya existe un producto registrado");
+                        throw new Error("Ya existe un producto registrado con el nombre " + nombre);
                     }
                     return [2 /*return*/];
             }
@@ -76,9 +76,8 @@ var ExisteTipoProductoID = function (id) {
                 case 1:
                     producto = _a.sent();
                     if (!producto) {
-                        throw new Error("No existen registros");
+                        throw new Error("El producto no se encuetra registrado");
                     }
-                    console.log("soy el producto : ", producto);
                     return [4 /*yield*/, producto_associations_1.Categoria.findOne({
                             where: {
                                 id_categoria: producto.id_categoria,
@@ -87,9 +86,8 @@ var ExisteTipoProductoID = function (id) {
                         })];
                 case 2:
                     categoria = _a.sent();
-                    console.log("soy la categoria");
-                    if (!producto) {
-                        throw new Error("No existen registros");
+                    if (!categoria) {
+                        throw new Error("El producto no se encuetra registrado");
                     }
                     return [2 /*return*/];
             }
@@ -98,6 +96,7 @@ var ExisteTipoProductoID = function (id) {
 };
 exports.ExisteTipoProductoID = ExisteTipoProductoID;
 //PRODUCTOS CON FECHA DE CADUCIDAD
+//verifica si el producto que se quiere registrar ya está ingresado
 var existeProductoFechaCaducidad = function (fecha) {
     if (fecha === void 0) { fecha = ""; }
     return __awaiter(void 0, void 0, void 0, function () {
@@ -107,7 +106,7 @@ var existeProductoFechaCaducidad = function (fecha) {
                 case 0: return [4 /*yield*/, producto_associations_1.Producto.findOne({
                         where: {
                             fecha_caducidad: fecha,
-                            disponibilidad: true
+                            estado: true
                         }
                     })];
                 case 1:
@@ -124,20 +123,41 @@ exports.existeProductoFechaCaducidad = existeProductoFechaCaducidad;
 var existeProductoCaducidadID = function (id) {
     if (id === void 0) { id = ""; }
     return __awaiter(void 0, void 0, void 0, function () {
-        var producto;
+        var producto, tipo_producto, categoria;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, producto_associations_1.Producto.findOne({
                         where: {
                             id_producto: id,
-                            disponibilidad: true
+                            estado: true
                         }
                     })];
                 case 1:
                     producto = _a.sent();
-                    console.log(producto);
                     if (!producto) {
                         throw new Error("El producto no se encuentra registrado");
+                    }
+                    return [4 /*yield*/, producto_associations_1.TProducto.findOne({
+                            where: {
+                                id_tipoprod: producto.id_tipoprod,
+                                estado: true
+                            }
+                        })];
+                case 2:
+                    tipo_producto = _a.sent();
+                    if (!tipo_producto) {
+                        throw new Error(" El producto no se encuentra registro");
+                    }
+                    return [4 /*yield*/, producto_associations_1.Categoria.findOne({
+                            where: {
+                                id_categoria: tipo_producto.id_categoria,
+                                estado: true
+                            }
+                        })];
+                case 3:
+                    categoria = _a.sent();
+                    if (!categoria) {
+                        throw new Error("El producto no se encuetra registrado");
                     }
                     return [2 /*return*/];
             }

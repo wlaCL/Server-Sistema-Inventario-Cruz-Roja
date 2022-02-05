@@ -39,30 +39,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExistAuthorAmbulance = void 0;
-var error_1 = __importDefault(require("../models/errors/error"));
+exports.existeRegistro = exports.ExistAuthorAmbulance = void 0;
 var trabaja_model_1 = __importDefault(require("../models/trabaja.model"));
+var registro_producto_1 = __importDefault(require("../models/registro_producto"));
 var ExistAuthorAmbulance = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, cedula, placa, fecha, author, obj;
+    var _a, placa, fecha, cedula, author;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _a = req.body, cedula = _a.cedula, placa = _a.placa, fecha = _a.fecha;
+                _a = req.body, placa = _a.placa, fecha = _a.fecha;
+                cedula = req.user;
                 return [4 /*yield*/, trabaja_model_1.default.findOne({
                         where: {
                             cedula: cedula,
                             placa: placa,
-                            rol: "Paramedico",
                             fecha_inicio: fecha
                         }
                     })];
             case 1:
                 author = _b.sent();
-                console.log(author);
                 if (author) {
-                    obj = new error_1.default('Paramédico', "Usted ya tiene un reporte en proceso para la ambulancia " + placa);
                     return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObjt
+                            ok: false,
+                            msg: "Usted ya tiene un reporte en proceso para la ambulancia " + placa
                         })];
                 }
                 next();
@@ -71,4 +70,30 @@ var ExistAuthorAmbulance = function (req, res, next) { return __awaiter(void 0, 
     });
 }); };
 exports.ExistAuthorAmbulance = ExistAuthorAmbulance;
+var existeRegistro = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, id, _c, id_reporte, producto;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
+            case 0:
+                _a = req.body, _b = _a.id, id = _b === void 0 ? "" : _b, _c = _a.id_reporte, id_reporte = _c === void 0 ? "" : _c;
+                return [4 /*yield*/, registro_producto_1.default.findOne({
+                        where: {
+                            id_producambu: id,
+                            id_reporte: id_reporte
+                        }
+                    })];
+            case 1:
+                producto = _d.sent();
+                if (producto) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "El producto ya fue registrado"
+                        })];
+                }
+                next();
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.existeRegistro = existeRegistro;
 //# sourceMappingURL=validar_campos_reporte.js.map

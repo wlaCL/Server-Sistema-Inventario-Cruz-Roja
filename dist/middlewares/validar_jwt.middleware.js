@@ -40,47 +40,68 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validarJWT = void 0;
-//const { request, response } = require("express");
-//const jwt = require('jsonwebtoken');
-//import { Request, Response, NextFunction } from 'express';
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var models_1 = require("../models/models");
 var validarJWT = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var token, cedula, id, usuario, error_1;
+    var token, identificador, id, cedula, usuario, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 token = req.header('x-token');
-                console.log(token);
                 if (!token) {
                     return [2 /*return*/, res.status(401).json({
-                            msg: "No hay token en la petición"
+                            errors: {
+                                ok: false,
+                                msg: "No hay token en la petición"
+                            }
                         })];
                 }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 console.log('1');
-                cedula = jsonwebtoken_1.default.verify(token, 'q7497437_U&#UEOUEW@$%').cedula;
-                id = cedula;
-                return [4 /*yield*/, models_1.Persona.findByPk(id)];
+                id = void 0;
+                try {
+                    id = jsonwebtoken_1.default.verify(token, 'q7497437_U&#UEOUEW@$%');
+                    cedula = id.cedula;
+                    identificador = cedula;
+                }
+                catch (error) {
+                    return [2 /*return*/, res.status(401).json({
+                            errors: {
+                                ok: false,
+                                msg: "Token no válido"
+                            }
+                        })];
+                }
+                req.user = identificador;
+                return [4 /*yield*/, models_1.Persona.findByPk(identificador)];
             case 2:
                 usuario = _a.sent();
-                req.user = usuario;
-                console.log(usuario);
                 if (!usuario) {
                     return [2 /*return*/, res.status(401).json({
-                            msg: 'Token no válido -- no se encuentra registrado en la base de datos'
+                            ok: false,
+                            msg: 'Token no válido'
                         })];
                 }
                 if (!usuario.estado) {
                     return [2 /*return*/, res.status(401).json({
-                            msg: 'Token no válido -- eliminado'
+                            errors: {
+                                ok: false,
+                                msg: "token no valido"
+                            }
                         })];
                 }
                 return [3 /*break*/, 4];
             case 3:
                 error_1 = _a.sent();
+                console.log(error_1);
+                res.status(500).json({
+                    errors: {
+                        ok: false,
+                        msg: "Ha ocurrido un error contáctate con el administrador"
+                    }
+                });
                 return [3 /*break*/, 4];
             case 4:
                 next();

@@ -57,7 +57,8 @@ var getProductos = function (req, res) { return __awaiter(void 0, void 0, void 0
                                     _c[sequelize_1.Op.endsWith] = termino,
                                     _c[sequelize_1.Op.substring] = termino,
                                     _c),
-                                _b)
+                                _b),
+                            estado: true
                         }
                     })];
             case 2:
@@ -78,6 +79,11 @@ var getProductos = function (req, res) { return __awaiter(void 0, void 0, void 0
                 return [3 /*break*/, 4];
             case 3:
                 error_1 = _d.sent();
+                console.log(error_1);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }

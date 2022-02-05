@@ -7,13 +7,6 @@ const Reporte = db.define('reporte',{
         defaultValue: DataTypes.UUIDV4, 
         primaryKey: true
     }, 
-    id_regisproduc:{
-        type: DataTypes.UUIDV4,
-        allowNull: false, 
-        validate:{
-            msg:"El id del registro del producto es obligatorio"
-        }
-    }, 
     placa:{
         type: DataTypes.STRING(7), 
         allowNull: false, 
@@ -27,14 +20,18 @@ const Reporte = db.define('reporte',{
         type: DataTypes.UUIDV4, 
         allowNull: false, 
         validate:{
-            msg: "El id del encabezado es obligatorio"
+            notNull:{
+                msg: "El id del paramédico es obligatorio"
+            }
         }
     }, 
     fecha:{
         type: DataTypes.DATEONLY, 
         allowNull: false, 
         validate:{
-            msg: "La fecha de registro es obligatoria"
+            notNull:{
+                msg: "La fecha de registro es obligatoria"
+            }
         }
     }, 
     novedades: {
@@ -44,9 +41,14 @@ const Reporte = db.define('reporte',{
     base:{
         type: DataTypes.STRING, 
         allowNull: true, 
-        validate:{
-            msg :"La base es obligatoria"
-        }
+    }, 
+    conductor:{
+        type: DataTypes.STRING,
+        allowNull: true
+    }, 
+    asistente:{
+        type: DataTypes.STRING, 
+        allowNull: true
     }
 },{
     timestamps: false, 

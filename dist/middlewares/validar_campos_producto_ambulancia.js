@@ -39,12 +39,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.existRegisterProductAmbulancia = exports.verifySumCantProductoAmbulancia = exports.verifyCantProductoAmbulancia = exports.existeProductoAmbulancia = void 0;
+exports.existeNombreProductoAmbulancia = exports.existRegisterProductAmbulancia = exports.verifySumCantProductoAmbulancia = exports.verifyCantProductoAmbulancia = exports.existeProductoAmbulancia = void 0;
 var producto_ambulancia_1 = __importDefault(require("../models/producto_ambulancia"));
-var error_1 = __importDefault(require("../models/errors/error"));
 var producto_associations_1 = require("../associations/producto.associations");
+var tipo_producto_model_1 = __importDefault(require("../models/tipo_producto.model"));
 var existeProductoAmbulancia = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, placa, _c, id_producto, producto, obj;
+    var _a, _b, placa, _c, id_producto, producto;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
@@ -59,9 +59,9 @@ var existeProductoAmbulancia = function (req, res, next) { return __awaiter(void
             case 1:
                 producto = _d.sent();
                 if (producto) {
-                    obj = new error_1.default('id_producto, placa', "El producto ya se encuentra asignado a la placa " + placa);
                     return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObjt
+                            ok: false,
+                            msg: "El produco ya se encuenta asignado a la placa " + placa
                         })];
                 }
                 next();
@@ -72,7 +72,7 @@ var existeProductoAmbulancia = function (req, res, next) { return __awaiter(void
 exports.existeProductoAmbulancia = existeProductoAmbulancia;
 //VALIDAMOS QUE EN LA PETICIÓN  LA CANTIDAD INGRESADA POR EL USUARIO NO SEA MAYOR A LA CANTIDAD REGISTRADA EN LA TABLA PRODUCTO 
 var verifyCantProductoAmbulancia = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, id_producto, cant_ambulancia, producto, obj;
+    var _a, _b, id_producto, cant_ambulancia, producto;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
@@ -85,9 +85,9 @@ var verifyCantProductoAmbulancia = function (req, res, next) { return __awaiter(
             case 1:
                 producto = _c.sent();
                 if (producto.cantidad < cant_ambulancia) {
-                    obj = new error_1.default('cantidad', 'Cantidad no puede ser mayor a la registrada incialmente en el producto ');
                     return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObj,
+                            ok: false,
+                            msg: "La cantidad no puede ser mayor a la registrada incialmente en el producto"
                         })];
                 }
                 next();
@@ -97,7 +97,7 @@ var verifyCantProductoAmbulancia = function (req, res, next) { return __awaiter(
 }); };
 exports.verifyCantProductoAmbulancia = verifyCantProductoAmbulancia;
 var verifySumCantProductoAmbulancia = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var suma, _a, _b, id_producto, _c, cant_ambulancia, rows, producto, i, unidad_disponible, obj, obj;
+    var suma, _a, _b, id_producto, _c, cant_ambulancia, rows, producto, i, unidad_disponible;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
@@ -123,15 +123,15 @@ var verifySumCantProductoAmbulancia = function (req, res, next) { return __await
                 }
                 unidad_disponible = producto.cantidad - suma;
                 if (unidad_disponible == 0) {
-                    obj = new error_1.default('cant_ambulancia', 'No existe stock disponible');
                     return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObjt
+                            ok: false,
+                            msg: "No existe stock disponible"
                         })];
                 }
                 if (cant_ambulancia > unidad_disponible) {
-                    obj = new error_1.default('cant_ambulancia', "Stock disponible " + unidad_disponible);
                     return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObjt
+                            ok: false,
+                            msg: "Stock disponible " + unidad_disponible
                         })];
                 }
                 next();
@@ -141,7 +141,7 @@ var verifySumCantProductoAmbulancia = function (req, res, next) { return __await
 }); };
 exports.verifySumCantProductoAmbulancia = verifySumCantProductoAmbulancia;
 var existRegisterProductAmbulancia = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, placa, _c, id_producto, producto, obj;
+    var _a, _b, placa, _c, id_producto, producto;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
@@ -156,9 +156,9 @@ var existRegisterProductAmbulancia = function (req, res, next) { return __awaite
             case 1:
                 producto = _d.sent();
                 if (!producto) {
-                    obj = new error_1.default('id_producto, placa', "No existe el producto que intenta eliminar");
-                    return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObjt
+                    return [2 /*return*/, res.status(404).json({
+                            ok: false,
+                            msg: "Producto no encontrado"
                         })];
                 }
                 next();
@@ -167,4 +167,49 @@ var existRegisterProductAmbulancia = function (req, res, next) { return __awaite
     });
 }); };
 exports.existRegisterProductAmbulancia = existRegisterProductAmbulancia;
+var existeNombreProductoAmbulancia = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, id, _c, nombre, _d, placa, producto;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
+            case 0:
+                _a = req.body, _b = _a.id, id = _b === void 0 ? "" : _b, _c = _a.nombre, nombre = _c === void 0 ? "" : _c, _d = _a.placa, placa = _d === void 0 ? "" : _d;
+                return [4 /*yield*/, tipo_producto_model_1.default.findOne({
+                        include: [
+                            {
+                                model: producto_associations_1.Producto,
+                                where: {
+                                    estado: true,
+                                },
+                                include: [
+                                    {
+                                        model: producto_ambulancia_1.default,
+                                        where: {
+                                            estado: true,
+                                            placa: placa
+                                        }
+                                    }
+                                ],
+                            }
+                        ],
+                        where: {
+                            estado: true,
+                            nombre: nombre,
+                        }
+                    })];
+            case 1:
+                producto = _e.sent();
+                console.log(producto);
+                if (producto) {
+                    res.status(400).json({
+                        ok: false,
+                        msg: "El producto ya se encuentra registrado con la placa  " + placa,
+                        producto: producto
+                    });
+                }
+                next();
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.existeNombreProductoAmbulancia = existeNombreProductoAmbulancia;
 //# sourceMappingURL=validar_campos_producto_ambulancia.js.map

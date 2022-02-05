@@ -48,7 +48,7 @@ var noExistePersona = function (cedula) {
                 case 1:
                     persona = _a.sent();
                     if (persona) {
-                        throw new Error("La c\u00E9dula ya se encuentra registrada " + cedula);
+                        throw new Error("La c\u00E9dula " + cedula + " ya se encuentra registrada ");
                     }
                     return [2 /*return*/];
             }

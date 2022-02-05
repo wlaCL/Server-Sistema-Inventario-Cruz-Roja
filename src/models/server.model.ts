@@ -7,7 +7,7 @@ import usuariosRouter from '../routes/usuario.route';
 import categoriasRouter from '../routes/categoria.route';
 import produtosRouter from '../routes/producto.route';
 import ambulanciaRouter from '../routes/ambulancia.route';
-import producto_ambulancia_router from '../routes/producto_ambulancia';
+import producto_ambulancia_router from '../routes/producto_ambulancia.route';
 import producto_registro_router from '../routes/inventario.route';
 import reporteRouter from '../routes/reporte.route';
 import authRouter from '../routes/auth.route';

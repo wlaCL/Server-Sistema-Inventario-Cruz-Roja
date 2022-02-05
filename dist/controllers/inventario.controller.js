@@ -35,15 +35,50 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postInventario = void 0;
-var postInventario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        res.status(200).json({
-            msg: "soy el post inventario"
-        });
-        return [2 /*return*/];
+exports.crearProductoApp = void 0;
+var producto_associations_1 = require("../associations/producto.associations");
+var producto_ambulancia_1 = __importDefault(require("../models/producto_ambulancia"));
+// Crear un producto desde el la app movil 
+var crearProductoApp = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, placa, _c, id_producto, _d, cantidad, producto, producto_ambulancia, error_1;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
+            case 0:
+                _e.trys.push([0, 3, , 4]);
+                _a = req.body, _b = _a.placa, placa = _b === void 0 ? "" : _b, _c = _a.id_producto, id_producto = _c === void 0 ? "" : _c, _d = _a.cantidad, cantidad = _d === void 0 ? "" : _d;
+                return [4 /*yield*/, producto_associations_1.Producto.create({
+                        id_tipoprod: id_producto,
+                        cantidad: cantidad
+                    })];
+            case 1:
+                producto = _e.sent();
+                return [4 /*yield*/, producto_ambulancia_1.default.create({
+                        id_producto: producto.id_producto,
+                        placa: placa,
+                        cant_ambulancia: cantidad,
+                        stock: cantidad
+                    })];
+            case 2:
+                producto_ambulancia = _e.sent();
+                return [2 /*return*/, res.status(200).json({
+                        ok: true,
+                        msg: "Producto creado exitósamente"
+                    })];
+            case 3:
+                error_1 = _e.sent();
+                console.log(error_1);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error en el servidor"
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
     });
 }); };
-exports.postInventario = postInventario;
+exports.crearProductoApp = crearProductoApp;
 //# sourceMappingURL=inventario.controller.js.map

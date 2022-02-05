@@ -37,7 +37,7 @@ var Producto = connection_db_1.default.define('producto', {
     cantidad: {
         type: sequelize_1.DataTypes.INTEGER,
     },
-    disponibilidad: {
+    estado: {
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: true,
         allowNull: false,

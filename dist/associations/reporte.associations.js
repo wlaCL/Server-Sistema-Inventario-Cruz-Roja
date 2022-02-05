@@ -19,6 +19,6 @@ models_1.Ambulancia.belongsToMany(models_1.Persona, {
 });
 models_1.Trabaja.hasOne(models_1.Reporte, { foreignKey: "id_trabaja" });
 models_1.Reporte.belongsTo(models_1.Trabaja, { foreignKey: 'id_trabaja' });
-models_1.Registro_Producto.hasOne(models_1.Reporte, { foreignKey: 'id_regisproduc' });
-models_1.Reporte.belongsTo(models_1.Registro_Producto, { foreignKey: 'id_regisproduc' });
+models_1.Reporte.hasMany(models_1.Registro_Producto, { foreignKey: 'id_reporte' });
+models_1.Registro_Producto.belongsTo(models_1.Reporte, { foreignKey: 'id_reporte' });
 //# sourceMappingURL=reporte.associations.js.map

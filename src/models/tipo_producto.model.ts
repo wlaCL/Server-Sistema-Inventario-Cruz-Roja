@@ -32,7 +32,7 @@ const TProducto = db.define('tipo_producto',{
     }, 
     descripcion:{
         type:DataTypes.STRING(100),
-        allowNull:false
+        allowNull:true
     }, 
     estado:{
         type:DataTypes.BOOLEAN,

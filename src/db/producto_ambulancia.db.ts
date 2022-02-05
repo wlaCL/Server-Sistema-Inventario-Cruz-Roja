@@ -6,7 +6,7 @@ export const exiteProductoCaducidad = async(id ="")=>{
     const producto = await Producto.findOne({
         where:{
             id_producto: id, 
-            disponibilidad: true
+            estado: true
         }
     });
     if(!producto){

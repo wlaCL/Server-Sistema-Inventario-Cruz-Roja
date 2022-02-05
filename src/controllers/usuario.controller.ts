@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Op } from 'sequelize';
 import {Usuario, Persona, Cuenta_Acceso} from "../associations/usuario.associations";
-import GenericError from '../models/errors/error';
+import bycripts from 'bcryptjs';
 
 
 //crear usuario
@@ -16,27 +16,19 @@ export const postUsuario = async(req:Request, res: Response) =>{
             apellido
         });
 
-        if(rol == "" && contrasena == ""){
-           return res.status(201).json({
-                ok:true,
-                msg:"Personal registrado exitosamente",
-                usuario:persona
-            });            
-        }
-
-        if(rol != "") {
-            usuario = await Usuario.create({
+        
+        usuario = await Usuario.create({
                 cedula, 
                 roles_sistema: rol
-            });
-        }        
+        });     
         
-        if(contrasena != ""){
-            await Cuenta_Acceso.create({
+        const salt = bycripts.genSaltSync();
+        const password = bycripts.hashSync(contrasena,salt); 
+
+        await Cuenta_Acceso.create({
                 id_usuario: usuario.id_usuario, 
-                contrasena
-            });
-        }
+                contrasena:password
+        });        
         
         return res.status(201).json({
             ok:true,
@@ -45,20 +37,15 @@ export const postUsuario = async(req:Request, res: Response) =>{
         });   
       
        
-    }catch(error){
-        
-        console.log(error);
-        const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-               errors:obj.ErrorObjt
-            });
-        } else{
-            res.status(500).json({  
-                errors: "Ha ocurrido un error contácte con el administrador"      
-            }); 
-        }     
+    }catch(error){        
+        console.log(error);        
+        res.status(500).json({  
+                errors: {
+                    ok: false, 
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                }   
+        }); 
+           
     }   
 }
 
@@ -81,7 +68,7 @@ export const deleteUsuario = async(req:Request, res:Response)=>{
         }
         res.status(200).json({
             ok:true,
-            msg:'Personal desactivado exitósamente',
+            msg:'Usuario eliminado exitósamente',
             persona
         }); 
 
@@ -213,43 +200,57 @@ export const actualizarUsuario = async(req:Request, res:Response)=>{
             where: {
                 cedula
             }
-        })
-        const persona = await Persona.update({
+        }); 
+
+        const persona:any = await Persona.update({
             nombre:(nombre!="")?nombre: personadb.nombre,
             apellido: (apellido!="")?apellido:personadb.apellido,
-            rol:(rol!="")?rol:personadb.rol,
         },{
             where:{
                 cedula
             }
         });
 
-        if(persona[0] == 0){
-           const obj = new GenericError('No hay campos para actualizar', "No registraron cambios")
-            return res.status(400).json({
-                errors:obj.ErrorObj
-            })
-        }
+        const usuario:any = await Usuario.findOne({
+            where:{
+                cedula
+            }
+        })
 
-        return res.status(200).json({
+      const user:any =  await Usuario.update({
+           roles_sistema:(rol=="")? usuario.roles_sistema: rol
+       },
+        {where:{
+            cedula
+       }});
+
+       if(user == 0){
+        return res.status(400).json({
+            ok: false, 
+            msg: "No se registraron cambios",
+        });
+    }
+
+        if(user ==0 && persona == 0){
+            return res.status(400).json({
+                ok: false, 
+                msg: "No se registraron cambios",
+            })
+        }        
+
+        res.status(200).json({
             ok:true,
             msg:"Actualización exitosa", 
-            registros_actualizados: persona[0]
         })
 
     }catch(error){
-        console.log(error);
-        const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-               errors:obj.ErrorObjt
-            });
-        } else{
-            res.status(500).json({  
-                errors: "Ha ocurrido un error contácte con el administrador"      
-            }); 
-        } 
+        console.log(error);       
+        res.status(500).json({  
+                errors: {
+                    ok: false, 
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                }   
+        }); 
     } 
 }
 
@@ -297,15 +298,16 @@ export const getUsuarios = async (req:Request, res:Response) =>{
                          [Op.endsWith]: apellido
                           }                
                     }
-                },        
+                },  
+                estado: true      
             }
+
         }); 
      
         if(personas.length == 0){
             return res.status(400).json({
                 ok: false, 
                 msg: 'No se encontraron registros', 
-                personas: []
             });
         }
      

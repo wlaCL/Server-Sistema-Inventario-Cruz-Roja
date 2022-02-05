@@ -36,7 +36,7 @@ var TProducto = connection_db_1.default.define('tipo_producto', {
     },
     descripcion: {
         type: sequelize_1.DataTypes.STRING(100),
-        allowNull: false
+        allowNull: true
     },
     estado: {
         type: sequelize_1.DataTypes.BOOLEAN,

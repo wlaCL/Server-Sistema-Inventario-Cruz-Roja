@@ -35,20 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validarCamposAmbulancia = void 0;
-var error_1 = __importDefault(require("../models/errors/error"));
 var validarCamposAmbulancia = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, descripcion, _c, num_vehiculo, obj;
+    var _a, _b, descripcion, _c, num_vehiculo;
     return __generator(this, function (_d) {
         _a = req.body, _b = _a.descripcion, descripcion = _b === void 0 ? "" : _b, _c = _a.num_vehiculo, num_vehiculo = _c === void 0 ? "" : _c;
         if (descripcion == "" && num_vehiculo == "") {
-            obj = new error_1.default('num_vehiculo = ?, descripcion = ?', 'No existe información para actualizar');
             return [2 /*return*/, res.status(400).json({
-                    errors: obj
+                    ok: false,
+                    msg: "No existen campos para actualizar"
                 })];
         }
         next();

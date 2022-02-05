@@ -24,17 +24,10 @@ export const postAmbulancia = async(req:Request, res:Response) =>{
         }
     }catch(error){
         console.log(error);
-        const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-                errors:obj.ErrorObjt
-            });
-        } else{
-            res.status(500).json({  
-                errors: "Ha ocurrido un error contácte con el administrador"      
-            }); 
-        } 
+        res.status(500).json({
+            ok: false,
+            msg: "Ha ocurrido un error contáctate con administrador"
+        })
     }    
 }
 
@@ -58,10 +51,11 @@ export const eliminarAmbulancia = async(req:Request, res:Response) =>{
 
 
     }catch(error){
-        console.log(error); 
+        console.log(error);
         res.status(500).json({
-            Errors: "Ha ocurrido un error contáctate con el administrador"
-        });
+            ok: false,
+            msg: "Ha ocurrido un error contáctate con administrador"
+        })
     }
 }
 
@@ -92,19 +86,11 @@ export const actualizarAmbulancia = async(req:Request, res: Response) =>{
         });
     }catch(error){
         console.log(error);
-        const {name, errors}:any = error        
-        if(name === "SequelizeValidationError"){
-            const obj = new GenericError(errors[0].value, errors[0].message )
-            return res.status(422).json({
-                errors:obj.ErrorObjt
-            });
-        } else{
-            res.status(500).json({  
-                errors: "Ha ocurrido un error contáctate con el administrador"      
-            }); 
-        }  
-    }
-    
+        res.status(500).json({
+            ok: false,
+            msg: "Ha ocurrido un error contáctate con administrador"
+        });
+    }    
 }
 
 //Busqueda de ambulancia
@@ -138,10 +124,11 @@ export const obtenerAmbulancia =async (req:Request, res:Response) => {
         });
 
     }catch(error){
-        console.log(error); 
+        console.log(error);
         res.status(500).json({
-            errors: "Ha ocurrido un error contactate con el administrador"
-        })
+            ok: false,
+            msg: "Ha ocurrido un error contáctate con administrador"
+        });
     }   
 }
 

@@ -1,25 +1,44 @@
 import { Request, Response, NextFunction } from "express";
-import { noExtendLeft } from "sequelize/types/lib/operators";
-import GenericError from '../models/errors/error';
+
 import Trabaja from '../models/trabaja.model';
 
+import Registro_Producto from '../models/registro_producto';
+
 export const  ExistAuthorAmbulance = async(req:Request, res: Response, next: NextFunction)=>{
-    const {cedula, placa, fecha} = req.body
+    const {placa, fecha} = req.body
+    const cedula:any = req.user;
     const author = await Trabaja.findOne({
         where: {
-            cedula, 
+            cedula,
             placa,
-            rol: "Paramedico", 
             fecha_inicio:fecha
         }
     });
-    console.log(author);
 
     if(author){
-        const obj = new GenericError('Paramédico', `Usted ya tiene un reporte en proceso para la ambulancia ${placa}`); 
         return res.status(400).json({
-            errors: obj.ErrorObjt
+            ok: false, 
+            msg: `Usted ya tiene un reporte en proceso para la ambulancia ${placa}`
         })
     }
     next();
+}
+
+
+export const existeRegistro = async (req:Request, res:Response, next: NextFunction)=>{
+    const {id = "", id_reporte=""} = req.body; 
+    const producto = await Registro_Producto.findOne({
+        where:{
+            id_producambu:id, 
+            id_reporte
+        }
+    });
+
+    if(producto){
+       return res.status(400).json({
+            ok: false, 
+            msg: "El producto ya fue registrado"
+        })
+    }
+    next()
 }

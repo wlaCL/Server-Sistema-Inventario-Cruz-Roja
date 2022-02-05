@@ -46,9 +46,9 @@ var validarTipoUnidad = function (req, res, next) {
     var _a = req.body, tipo = _a.tipo, medida = _a.medida;
     if (tipo == "Insumo Medico") {
         if (!tiposUnidad.includes(medida)) {
-            var obj = new error_1.default("medida", "Es necesario agregar unidad de medida (medida)");
             return res.status(400).json({
-                errors: obj.ErrorObjt
+                ok: false,
+                msg: "Es necesario agregar la unidad de medida"
             });
         }
     }
@@ -62,7 +62,8 @@ var validarCantidadEquipos = function (req, res, next) { return __awaiter(void 0
         if (tipo == "Equipo" && cantidad == "") {
             obj = new error_1.default('cantidad', "La cantidad es obligatoria");
             return [2 /*return*/, res.status(400).json({
-                    errors: obj.ErrorObjt
+                    ok: false,
+                    msg: "La cantidad es obligatoria"
                 })];
         }
         next();

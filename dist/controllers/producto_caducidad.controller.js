@@ -35,15 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteProductoCaducidad = exports.putProductoCaducidad = exports.postProductoCaducidad = void 0;
 var producto_associations_1 = require("../associations/producto.associations");
-var error_1 = __importDefault(require("../models/errors/error"));
 var postProductoCaducidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id_tipoprod, fecha_caducidad, cantidad, producto, error_2, name_1, errors, obj;
+    var _a, id_tipoprod, fecha_caducidad, cantidad, producto, error_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -58,27 +54,19 @@ var postProductoCaducidad = function (req, res) { return __awaiter(void 0, void 
                     })];
             case 2:
                 producto = _b.sent();
-                res.status(201).json({
+                res.status(200).json({
                     ok: true,
                     msg: "Producto registrado exitósamente",
                     producto: producto
                 });
                 return [3 /*break*/, 4];
             case 3:
-                error_2 = _b.sent();
-                console.log(error_2);
-                name_1 = error_2.name, errors = error_2.errors;
-                if (name_1 === "SequelizeValidationError") {
-                    obj = new error_1.default(errors[0].value, errors[0].message);
-                    return [2 /*return*/, res.status(422).json({
-                            errors: obj.ErrorObjt
-                        })];
-                }
-                else {
-                    return [2 /*return*/, res.status(500).json({
-                            errors: "Ha ocurrido un error contácte con el administrador"
-                        })];
-                }
+                error_1 = _b.sent();
+                console.log(error_1);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -86,16 +74,15 @@ var postProductoCaducidad = function (req, res) { return __awaiter(void 0, void 
 }); };
 exports.postProductoCaducidad = postProductoCaducidad;
 var putProductoCaducidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, _a, cantidad, busqueda, producto, obj, error_3;
+    var id, _a, cantidad, busqueda, registros_ambulancia, producto, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 id = req.params.id;
                 _a = req.body.cantidad, cantidad = _a === void 0 ? "" : _a;
-                console.log(cantidad);
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 4, , 5]);
+                _b.trys.push([1, 5, , 6]);
                 return [4 /*yield*/, producto_associations_1.Producto.findOne({
                         where: {
                             id_producto: id
@@ -103,17 +90,32 @@ var putProductoCaducidad = function (req, res) { return __awaiter(void 0, void 0
                     })];
             case 2:
                 busqueda = _b.sent();
+                return [4 /*yield*/, producto_associations_1.Producto_Ambulancia.findAll({
+                        where: {
+                            id_producto: id,
+                            estado: true
+                        }
+                    })];
+            case 3:
+                registros_ambulancia = _b.sent();
+                console.log(registros_ambulancia);
+                if (registros_ambulancia != 0) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "No es posible actualizar la cantidad"
+                        })];
+                }
                 return [4 /*yield*/, producto_associations_1.Producto.update({
                         cantidad: (cantidad != "") ? cantidad : busqueda.cantidad
                     }, {
                         where: { id_producto: id }
                     })];
-            case 3:
+            case 4:
                 producto = _b.sent();
                 if (producto[0] == 0) {
-                    obj = new error_1.default('', 'No se registraron cambios');
                     return [2 /*return*/, res.status(400).json({
-                            errors: obj.ErrorObj
+                            ok: false,
+                            msg: "No se registraron cambios"
                         })];
                 }
                 res.status(200).json({
@@ -121,16 +123,16 @@ var putProductoCaducidad = function (req, res) { return __awaiter(void 0, void 0
                     msg: "Actualiación exitósa",
                     producto: producto
                 });
-                return [3 /*break*/, 5];
-            case 4:
-                error_3 = _b.sent();
-                console.log(error_3);
+                return [3 /*break*/, 6];
+            case 5:
+                error_2 = _b.sent();
+                console.log(error_2);
                 res.status(500).json({
                     ok: false,
                     msg: "Ha ocurrido un error contáctate con el administrador"
                 });
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); };
@@ -142,7 +144,7 @@ var deleteProductoCaducidad = function (req, res) { return __awaiter(void 0, voi
             case 0:
                 id = req.params.id;
                 return [4 /*yield*/, producto_associations_1.Producto.update({
-                        disponibilidad: false
+                        estado: false
                     }, {
                         where: {
                             id_producto: id

@@ -35,12 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginWeb = exports.loginApp = void 0;
+exports.changePasswordUser = exports.changePasswordWeb = exports.loginWeb = exports.loginApp = void 0;
 var usuario_associations_1 = require("../associations/usuario.associations");
 var generar_jwt_1 = require("../helpers/generar_jwt");
+var bcryptjs_1 = __importDefault(require("bcryptjs"));
 var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, cedula, password, persona, usuario, cuenta, token, error_1;
+    var _a, cedula, password, persona, usuario, cuenta, validPassword, token, error_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -51,18 +55,14 @@ var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
                 persona = _b.sent();
                 if (!persona) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 if (!persona.estado) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 return [4 /*yield*/, usuario_associations_1.Usuario.findOne({
@@ -74,29 +74,24 @@ var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
                 usuario = _b.sent();
                 if (!usuario) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 if (usuario.roles_sistema != "user_app") {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.findByPk(usuario.id_usuario)];
             case 3:
                 cuenta = _b.sent();
-                if (cuenta.contrasena !== password) {
+                validPassword = bcryptjs_1.default.compareSync(password, cuenta.contrasena);
+                if (!validPassword) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 return [4 /*yield*/, (0, generar_jwt_1.generarJWT)(persona.cedula)];
@@ -113,10 +108,8 @@ var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
                 error_1 = _b.sent();
                 console.log(error_1);
                 res.status(500).json({
-                    errors: {
-                        ok: false,
-                        msg: "Ha ocurrido un error contáctate con el administrador"
-                    }
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
                 });
                 return [3 /*break*/, 6];
             case 6: return [2 /*return*/];
@@ -125,7 +118,7 @@ var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
 }); };
 exports.loginApp = loginApp;
 var loginWeb = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, cedula, password, persona, usuario, cuenta, token, error_2;
+    var _a, cedula, password, persona, usuario, cuenta, validPassword, token, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -136,18 +129,14 @@ var loginWeb = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
                 persona = _b.sent();
                 if (!persona) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 if (!persona.estado) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 return [4 /*yield*/, usuario_associations_1.Usuario.findOne({
@@ -159,29 +148,24 @@ var loginWeb = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
                 usuario = _b.sent();
                 if (!usuario) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 if (usuario.roles_sistema != "user_web") {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.findByPk(usuario.id_usuario)];
             case 3:
                 cuenta = _b.sent();
-                if (cuenta.contrasena !== password) {
+                validPassword = bcryptjs_1.default.compareSync(password, cuenta.contrasena);
+                if (!validPassword) {
                     return [2 /*return*/, res.status(400).json({
-                            errors: {
-                                ok: false,
-                                msg: "Usuario y/o contraseña no son válidos"
-                            }
+                            ok: false,
+                            msg: "Usuario y/o contraseña no son válidos"
                         })];
                 }
                 return [4 /*yield*/, (0, generar_jwt_1.generarJWT)(persona.cedula)];
@@ -198,10 +182,8 @@ var loginWeb = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
                 error_2 = _b.sent();
                 console.log(error_2);
                 res.status(500).json({
-                    errors: {
-                        ok: false,
-                        msg: "Ha ocurrido un error contáctate con el administrador"
-                    }
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
                 });
                 return [3 /*break*/, 6];
             case 6: return [2 /*return*/];
@@ -209,4 +191,155 @@ var loginWeb = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     });
 }); };
 exports.loginWeb = loginWeb;
+var changePasswordWeb = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, cedula, contrasena, nuevacontrasena, persona, usuario, acceso, validPassword, salt, newPassword, access, error_3;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, cedula = _a.cedula, contrasena = _a.contrasena, nuevacontrasena = _a.nuevacontrasena;
+                return [4 /*yield*/, usuario_associations_1.Persona.findByPk(cedula)];
+            case 1:
+                persona = _b.sent();
+                _b.label = 2;
+            case 2:
+                _b.trys.push([2, 6, , 7]);
+                // si se quiere actualizar la contrasena de un usuario no registrado
+                if (!persona) {
+                    return [2 /*return*/, res.status(404).json({
+                            ok: false,
+                            msg: "No es posible realizar está operación"
+                        })];
+                }
+                return [4 /*yield*/, usuario_associations_1.Usuario.findOne({
+                        where: {
+                            cedula: persona.cedula
+                        }
+                    })];
+            case 3:
+                usuario = _b.sent();
+                return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.findOne({
+                        where: {
+                            id_usuario: usuario.id_usuario
+                        }
+                    })];
+            case 4:
+                acceso = _b.sent();
+                validPassword = bcryptjs_1.default.compareSync(contrasena, acceso.contrasena);
+                if (!validPassword) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "Contraseña inválida"
+                        })];
+                }
+                salt = bcryptjs_1.default.genSaltSync();
+                newPassword = bcryptjs_1.default.hashSync(nuevacontrasena, salt);
+                return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.update({
+                        contrasena: newPassword
+                    }, {
+                        where: {
+                            id_usuario: acceso.id_usuario
+                        }
+                    })];
+            case 5:
+                access = _b.sent();
+                if (access == 1) {
+                    return [2 /*return*/, res.status(200).json({
+                            ok: true,
+                            msg: "Actualización exitósa"
+                        })];
+                }
+                res.status(400).json({
+                    ok: false,
+                    msg: "No se ha podido realizar la actualización de contraseña"
+                });
+                return [3 /*break*/, 7];
+            case 6:
+                error_3 = _b.sent();
+                console.log(error_3);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                });
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); };
+exports.changePasswordWeb = changePasswordWeb;
+var changePasswordUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, contrasena, nuevacontrasena, cedula, persona, usuario, acceso, validPassword, salt, newPassword, access, error_4;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, contrasena = _a.contrasena, nuevacontrasena = _a.nuevacontrasena;
+                cedula = req.user;
+                return [4 /*yield*/, usuario_associations_1.Persona.findByPk(cedula)];
+            case 1:
+                persona = _b.sent();
+                _b.label = 2;
+            case 2:
+                _b.trys.push([2, 6, , 7]);
+                // si se quiere actualizar la contrasena de un usuario no registrado
+                if (!persona) {
+                    return [2 /*return*/, res.status(404).json({
+                            ok: false,
+                            msg: "No es posible realizar está operación"
+                        })];
+                }
+                return [4 /*yield*/, usuario_associations_1.Usuario.findOne({
+                        where: {
+                            cedula: persona.cedula
+                        }
+                    })];
+            case 3:
+                usuario = _b.sent();
+                return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.findOne({
+                        where: {
+                            id_usuario: usuario.id_usuario
+                        }
+                    })];
+            case 4:
+                acceso = _b.sent();
+                validPassword = bcryptjs_1.default.compareSync(contrasena, acceso.contrasena);
+                if (!validPassword) {
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "Contraseña inválida"
+                        })];
+                }
+                salt = bcryptjs_1.default.genSaltSync();
+                newPassword = bcryptjs_1.default.hashSync(nuevacontrasena, salt);
+                return [4 /*yield*/, usuario_associations_1.Cuenta_Acceso.update({
+                        contrasena: newPassword
+                    }, {
+                        where: {
+                            id_usuario: acceso.id_usuario
+                        }
+                    })];
+            case 5:
+                access = _b.sent();
+                if (access == 1) {
+                    return [2 /*return*/, res.status(200).json({
+                            ok: true,
+                            msg: "Actualización exitósa"
+                        })];
+                }
+                res.status(400).json({
+                    ok: false,
+                    msg: "No se ha podido realizar la actualización de contraseña"
+                });
+                return [3 /*break*/, 7];
+            case 6:
+                error_4 = _b.sent();
+                console.log(error_4);
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                });
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); };
+exports.changePasswordUser = changePasswordUser;
 //# sourceMappingURL=auth.controller.js.map

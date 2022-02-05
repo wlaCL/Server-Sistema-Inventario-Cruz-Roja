@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 //import Producto_Ambulancia from '../models/producto_ambulancia';
 import {TProducto, Producto, Producto_Ambulancia, Categoria} from "../associations/producto.associations";
+import { Op } from 'sequelize';
 
 export const postProductoAmbulancia = async(req:Request, res:Response)=>{
 
@@ -10,7 +11,8 @@ export const postProductoAmbulancia = async(req:Request, res:Response)=>{
         const producto = await Producto_Ambulancia.create({
                 cant_ambulancia, 
                 id_producto, 
-                placa
+                placa, 
+                stock: cant_ambulancia
         })
 
         if(!producto){
@@ -65,7 +67,78 @@ export const deleteProductoAmbulancia = async (req:Request, res: Response)=>{
     
 }
 
-export const getProductosAmbulancia = async (req:Request, res: Response)=>{
+
+export const getProductosAmbulanciaNombre = async (req:Request, res: Response)=>{
+    const {placa="", termino =""} = req.params;
+
+    try{
+        const data:any = await TProducto.findAll({
+            include:[
+                {
+                    model: Categoria, 
+                    attributes:['nombre'], 
+                    where:{
+                        estado:true, 
+                        nombre:"Varios"
+                    }
+                },
+               {
+                   model: Producto,
+                   attributes:['id_producto','fecha_caducidad','cantidad', 'estado'],
+                   where:{
+                       estado:true
+                   },
+                   include:[
+                       {
+                           model: Producto_Ambulancia, 
+                           where:{
+                               placa, 
+                               estado:true
+                           }
+
+                       } 
+                   ]
+               }
+            ],
+            where:{
+                nombre:{
+                    [Op.or]:{
+                        [Op.startsWith]:termino, 
+                        [Op.endsWith]: termino, 
+                        [Op.substring]: termino                       
+                    }
+                }, 
+                estado:true,
+            }
+        });
+
+        console.log(data)
+        if(data.length == 0){
+            return res.status(404).json({
+                ok: false, 
+                msg: "No hay regisros"
+            })
+        }    
+
+        return res.status(200).json({
+            ok: true, 
+            msg: "Consulta éxitosa", 
+            data
+        });
+        
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            errors: {
+                ok: false, 
+                msg: "Ha ocurrido un errror contáctate con el administrador"
+            }
+        });
+    };      
+}
+
+
+export const getProductosAmbulanciaID= async (req:Request, res: Response)=>{
     const {placa="", id=""} = req.body;
 
 
@@ -74,16 +147,24 @@ export const getProductosAmbulancia = async (req:Request, res: Response)=>{
             include:[
                 {
                     model: Categoria, 
-                    attributes:['id_categoria', 'nombre']
+                    attributes:['nombre'], 
+                    where:{
+                        estado:true, 
+                        nombre: "Varios"
+                    }
                 },
                {
                    model: Producto,
-                   attributes:['id_producto','fecha_caducidad','cantidad', 'disponibilidad'],
+                   attributes:['id_producto','fecha_caducidad','cantidad', 'estado'],
+                   where:{
+                       estado:true
+                   },
                    include:[
                        {
                            model: Producto_Ambulancia, 
                            where:{
-                               placa
+                               placa, 
+                               estado:true
                            }
 
                        } 
@@ -91,7 +172,8 @@ export const getProductosAmbulancia = async (req:Request, res: Response)=>{
                }
             ],
             where:{
-                id_tipoprod:id
+                id_tipoprod:id, 
+                estado:true,
             }
         });
         if(!data){
@@ -112,7 +194,7 @@ export const getProductosAmbulancia = async (req:Request, res: Response)=>{
         res.status(500).json({
             errors: {
                 ok: false, 
-                msg: "Ha ocurrido un errro contáctate con el administrador"
+                msg: "Ha ocurrido un errror contáctate con el administrador"
             }
         });
     };      

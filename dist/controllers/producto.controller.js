@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductos = exports.getProducto = exports.deleteProducto = exports.putProducto = exports.postProducto = void 0;
+exports.getProductos = exports.getProductoTodos = exports.deleteProducto = exports.putProducto = exports.postProducto = void 0;
 var sequelize_1 = require("sequelize");
 var producto_associations_1 = require("../associations/producto.associations");
 var error_1 = __importDefault(require("../models/errors/error"));
@@ -187,12 +187,11 @@ var putProducto = function (req, res) { return __awaiter(void 0, void 0, void 0,
 exports.putProducto = putProducto;
 //eliminar producto 
 var deleteProducto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, producto, obj, productos, error_4;
+    var _a, id, producto, productos, error_4;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _a = req.params.id, id = _a === void 0 ? "" : _a;
-                console.log(id);
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 4, , 5]);
@@ -205,14 +204,14 @@ var deleteProducto = function (req, res) { return __awaiter(void 0, void 0, void
                     })];
             case 2:
                 producto = _b.sent();
-                if (producto[0] == 0) {
-                    obj = new error_1.default('id', "No se encontraron registros");
+                if (producto == 0) {
                     return [2 /*return*/, res.status(404).json({
-                            errors: obj.ErrorObj
+                            ok: false,
+                            msg: "No se encontraron registros"
                         })];
                 }
                 return [4 /*yield*/, producto_associations_1.Producto.update({
-                        disponibilidad: false
+                        estado: false
                     }, {
                         where: {
                             id_tipoprod: id
@@ -244,35 +243,50 @@ var deleteProducto = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.deleteProducto = deleteProducto;
-//obtener producto 
-var getProducto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, producto, obj, error_5;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+//obtener todos los productos
+var getProductoTodos = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var resultado, error_5;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
-                _a = req.params.id, id = _a === void 0 ? "" : _a;
-                return [4 /*yield*/, producto_associations_1.TProducto.findOne({
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, producto_associations_1.TProducto.findAndCountAll({
+                        include: [
+                            {
+                                model: producto_associations_1.Categoria,
+                                attributes: ['nombre', 'descripcion'],
+                                where: {
+                                    estado: true
+                                },
+                            },
+                            {
+                                model: producto_associations_1.Producto,
+                                where: {
+                                    estado: true
+                                }
+                            }
+                        ],
                         where: {
-                            id_tipoprod: id
+                            estado: true
                         }
                     })];
             case 1:
-                producto = _b.sent();
-                if (!producto) {
-                    obj = new error_1.default('id', "No se encontraron registros");
+                resultado = _a.sent();
+                if (resultado.rows == 0) {
                     return [2 /*return*/, res.status(404).json({
-                            errors: obj.ErrorObj
+                            ok: false,
+                            msg: "No se encontraron registros"
                         })];
                 }
                 res.status(200).json({
                     ok: true,
                     msg: "Búsqueda exitosa",
-                    producto: producto
+                    productos: resultado.rows,
+                    registros: resultado.count
                 });
                 return [3 /*break*/, 3];
             case 2:
-                error_5 = _b.sent();
+                error_5 = _a.sent();
                 console.log(error_5);
                 res.status(500).json({
                     msg: "Ha ocurrido un error contácte con el administrador"
@@ -282,58 +296,154 @@ var getProducto = function (req, res) { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
-exports.getProducto = getProducto;
-//consultar productos  POR VERIFICAR
+exports.getProductoTodos = getProductoTodos;
+//consultar productos por nombre
 var getProductos = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var termino, _a, _b, inicio, _c, fin, _d, rows, count, error_6;
-    var _e, _f;
-    return __generator(this, function (_g) {
-        switch (_g.label) {
+    var termino, _a, _b, inicio, _c, fin, resultado, error_6;
+    var _d, _e, _f, _g, _h, _j;
+    return __generator(this, function (_k) {
+        switch (_k.label) {
             case 0:
                 termino = req.params.termino;
                 _a = req.query, _b = _a.inicio, inicio = _b === void 0 ? 0 : _b, _c = _a.fin, fin = _c === void 0 ? 3 : _c;
-                _g.label = 1;
+                _k.label = 1;
             case 1:
-                _g.trys.push([1, 3, , 4]);
+                _k.trys.push([1, 5, , 6]);
                 return [4 /*yield*/, producto_associations_1.TProducto.findAndCountAll({
+                        include: [
+                            {
+                                model: producto_associations_1.Categoria,
+                                attributes: ['nombre', 'descripcion'],
+                                where: {
+                                    estado: true
+                                }
+                            },
+                            {
+                                model: producto_associations_1.Producto,
+                                attributes: ['id_producto', 'fecha_caducidad', 'cantidad'],
+                                where: {
+                                    estado: true
+                                },
+                                include: [
+                                    {
+                                        model: producto_associations_1.Producto_Ambulancia,
+                                        where: {
+                                            estado: true
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
                         where: {
-                            nombre: (_e = {},
-                                _e[sequelize_1.Op.or] = (_f = {},
-                                    _f[sequelize_1.Op.startsWith] = termino,
-                                    _f[sequelize_1.Op.endsWith] = termino,
-                                    _f[sequelize_1.Op.substring] = termino,
-                                    _f),
-                                _e),
+                            nombre: (_d = {},
+                                _d[sequelize_1.Op.or] = (_e = {},
+                                    _e[sequelize_1.Op.startsWith] = termino,
+                                    _e[sequelize_1.Op.endsWith] = termino,
+                                    _e[sequelize_1.Op.substring] = termino,
+                                    _e),
+                                _d),
                             estado: true
                         },
                         offset: Number(inicio),
                         limit: Number(fin)
                     })];
             case 2:
-                _d = _g.sent(), rows = _d.rows, count = _d.count;
-                console.log(rows, count);
-                if (rows == 0) {
+                resultado = _k.sent();
+                if (resultado.rows != 0) {
+                    return [2 /*return*/, res.status(200).json({
+                            ok: true,
+                            msg: "Búsqueda éxitosa",
+                            productos: resultado.rows,
+                            registros: resultado.count
+                        })];
+                }
+                return [4 /*yield*/, producto_associations_1.TProducto.findAndCountAll({
+                        include: [
+                            {
+                                model: producto_associations_1.Categoria,
+                                attributes: ['nombre', 'descripcion'],
+                                where: {
+                                    estado: true
+                                }
+                            },
+                            {
+                                model: producto_associations_1.Producto,
+                                attributes: ['id_producto', 'fecha_caducidad', 'cantidad'],
+                                where: {
+                                    estado: true
+                                },
+                            }
+                        ],
+                        where: {
+                            nombre: (_f = {},
+                                _f[sequelize_1.Op.or] = (_g = {},
+                                    _g[sequelize_1.Op.startsWith] = termino,
+                                    _g[sequelize_1.Op.endsWith] = termino,
+                                    _g[sequelize_1.Op.substring] = termino,
+                                    _g),
+                                _f),
+                            estado: true
+                        },
+                        offset: Number(inicio),
+                        limit: Number(fin)
+                    })];
+            case 3:
+                resultado = _k.sent();
+                if (resultado.rows != 0) {
+                    return [2 /*return*/, res.status(200).json({
+                            ok: true,
+                            msg: "Búsqueda éxitosa",
+                            productos: resultado.rows,
+                            registros: resultado.count
+                        })];
+                }
+                return [4 /*yield*/, producto_associations_1.TProducto.findAndCountAll({
+                        include: [
+                            {
+                                model: producto_associations_1.Categoria,
+                                attributes: ['nombre', 'descripcion'],
+                                where: {
+                                    estado: true
+                                }
+                            },
+                        ],
+                        where: {
+                            nombre: (_h = {},
+                                _h[sequelize_1.Op.or] = (_j = {},
+                                    _j[sequelize_1.Op.startsWith] = termino,
+                                    _j[sequelize_1.Op.endsWith] = termino,
+                                    _j[sequelize_1.Op.substring] = termino,
+                                    _j),
+                                _h),
+                            estado: true
+                        },
+                        offset: Number(inicio),
+                        limit: Number(fin)
+                    })];
+            case 4:
+                resultado = _k.sent();
+                if (resultado.rows == 0) {
                     return [2 /*return*/, res.status(404).json({
                             ok: false,
-                            msg: "No se encontraron registros"
+                            msg: "No se encontraron registros",
                         })];
                 }
                 res.status(200).json({
                     ok: true,
                     msg: "Búsqueda éxitosa",
-                    productos: rows,
-                    registros: count
+                    productos: resultado.rows,
+                    registros: resultado.count
                 });
-                return [3 /*break*/, 4];
-            case 3:
-                error_6 = _g.sent();
+                return [3 /*break*/, 6];
+            case 5:
+                error_6 = _k.sent();
                 console.log(error_6);
                 res.status(500).json({
                     ok: false,
                     msg: "Ha ocurrido un error contácte con el administrador",
                 });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); };
