@@ -83,15 +83,14 @@ router.get('/:cedula', [
     validar_campos_1.validarCampos
 ], usuario_controller_1.getUsuario);
 //buscar usuarios por nombre y apellido
-router.get('', [
-    validar_jwt_middleware_1.validarJWT,
+router.get('/search/data/:nombre/:apellido', [validar_jwt_middleware_1.validarJWT,
     validar_rol_1.isUserWeb,
-    (0, express_validator_1.query)('nombre')
-        .exists().withMessage('obligatorio')
-        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
-    (0, express_validator_1.query)('apellido')
-        .optional({ nullable: true })
-        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
+    (0, express_validator_1.check)('nombre')
+        .exists().withMessage('El termino de consulta es obligatorio')
+        .matches(/^[A-Za-z\s]+$/).withMessage('El termino solo debe tener letras'),
+    (0, express_validator_1.check)('apellido')
+        .exists().withMessage('El termino de consulta es obligatorio')
+        .matches(/^[A-Za-z\s]+$/).withMessage('El termino solo debe tener letras'),
     validar_campos_1.validarCampos
 ], usuario_controller_1.getUsuarios);
 exports.default = router;

@@ -71,13 +71,14 @@ export const actualizarAmbulancia = async(req:Request, res: Response) =>{
         const ambulancia = await Ambulancia.update(
             {
                 descripcion: (descripcion != "")? descripcion: amb.descripcion, 
-                num_vehiculo
+                num_vehiculo : (num_vehiculo != "")? num_vehiculo: amb.num_vehiculo,
             },{
                 where:{
                     placa
                 }
             }
         );
+
     
         res.status(200).json({
             ok:true,

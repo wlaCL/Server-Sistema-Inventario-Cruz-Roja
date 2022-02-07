@@ -53,13 +53,16 @@ router.put('/:placa', [
         .isInt({min:1,}).withMessage("El número de vehículo debe ser positivo"),        
     check('num_vehiculo').custom(existeAmbulanciaNumVehiculo),
     validarCampos, 
-    //validarCamposAmbulancia
+    validarCamposAmbulancia
 ], actualizarAmbulancia)
 
 //obtener datos de ambulancia
 router.get('/:termino',[
     validarJWT,
     isUserWeb,
+    check('termino')
+        .isAlphanumeric().withMessage("La placa solo puede contener letras y números")
+        .isLength({min:7, max:7}).withMessage("La placa debe contener 7 caracteres"),
     validarCampos, 
 ], obtenerAmbulancia); 
 

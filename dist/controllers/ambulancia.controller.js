@@ -130,7 +130,7 @@ var actualizarAmbulancia = function (req, res) { return __awaiter(void 0, void 0
                 amb = _d.sent();
                 return [4 /*yield*/, models_1.Ambulancia.update({
                         descripcion: (descripcion != "") ? descripcion : amb.descripcion,
-                        num_vehiculo: num_vehiculo
+                        num_vehiculo: (num_vehiculo != "") ? num_vehiculo : amb.num_vehiculo,
                     }, {
                         where: {
                             placa: placa

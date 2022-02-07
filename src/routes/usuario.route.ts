@@ -87,17 +87,16 @@ router.get('/:cedula',[
 ],    
 getUsuario)
 
-
 //buscar usuarios por nombre y apellido
-router.get('',[
-    validarJWT,
+router.get('/search/data/:nombre/:apellido',
+[    validarJWT,
     isUserWeb,
-    query('nombre')
-        .exists().withMessage('obligatorio')
-        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
-    query('apellido')
-        .optional({nullable: true})
-        .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
+    check('nombre')
+        .exists().withMessage('El termino de consulta es obligatorio')
+        .matches(/^[A-Za-z\s]+$/).withMessage('El termino solo debe tener letras'),
+    check('apellido')
+        .exists().withMessage('El termino de consulta es obligatorio')
+        .matches(/^[A-Za-z\s]+$/).withMessage('El termino solo debe tener letras'),
     validarCampos
 ],getUsuarios)
 

@@ -277,10 +277,7 @@ export const getUsuario =async (req:Request, res:Response) => {
 }
 
 export const getUsuarios = async (req:Request, res:Response) =>{
-    const {nombre = "", apellido = ""}:any = req.query;
-
-    console.log("**************************-",nombre, apellido);
-  
+    const {nombre = "", apellido = ""}:any = req.params; 
 
     try{
         const personas = await Persona.findAll({
