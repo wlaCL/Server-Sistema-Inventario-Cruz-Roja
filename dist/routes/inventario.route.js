@@ -16,7 +16,7 @@ router.post('', [
         .isUUID(4).withMessage("El id no es válido")
         .isLength({ min: 36, max: 36 }).withMessage("El id no es válido"),
     (0, express_validator_1.check)('cant_consumo')
-        .exists().withMessage("La cantidad de consumo es obligatoria")
+        .optional({ nullable: true })
         .isInt({ min: 0 }).withMessage("La cantidad de consumo debe ser mayor o igual a cero"),
     (0, express_validator_1.check)('id_reporte')
         .exists().withMessage("El id del reporte es obligatorio")
@@ -24,7 +24,7 @@ router.post('', [
         .isLength({ min: 36, max: 36 }).withMessage("Idetificador no válido"),
     (0, express_validator_1.check)('carga')
         .optional({ nullable: true })
-        .isInt({ min: 1 }).withMessage("El valor mínimo de la carga es 1"),
+        .isInt({ min: 0 }).withMessage("El valor mínimo de la carga es 0"),
     validar_campos_1.validarCampos,
     validar_campos_reporte_1.existeRegistro
 ], registro_producto_controller_1.postRegistroProducto);

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { check } from "express-validator";
+import { check, query } from "express-validator";
 import { postUsuario, deleteUsuario, actualizarUsuario, getUsuario, getUsuarios } from '../controllers/usuario.controller';
 import { AlmenosUnCampo} from '../middlewares/validar_campos_usuario';
 import { validarCampos } from '../middlewares/validar_campos';
@@ -88,14 +88,14 @@ router.get('/:cedula',[
 getUsuario)
 
 
-//buscar usuario 
+//buscar usuarios por nombre y apellido
 router.get('',[
     validarJWT,
     isUserWeb,
-    check('nombre')
-        .optional({nullable: true})
+    query('nombre')
+        .exists().withMessage('obligatorio')
         .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
-    check('apellido')
+    query('apellido')
         .optional({nullable: true})
         .matches(/^[A-Za-z\s]+$/).withMessage('El nombre solo debe tener letras'),
     validarCampos

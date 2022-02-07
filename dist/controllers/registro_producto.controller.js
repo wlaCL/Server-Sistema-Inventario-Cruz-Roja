@@ -85,7 +85,8 @@ var postRegistroProducto = function (req, res) { return __awaiter(void 0, void 0
                     })];
             case 4:
                 _f.sent();
-                return [2 /*return*/, res.status(201).json({
+                console.log("**********************************************************+");
+                return [2 /*return*/, res.status(200).json({
                         ok: true,
                         msg: "Registro éxitoso",
                         registro: registro

@@ -277,7 +277,9 @@ export const getUsuario =async (req:Request, res:Response) => {
 }
 
 export const getUsuarios = async (req:Request, res:Response) =>{
-    const {nombre = "", apellido = ""} = req.body;
+    const {nombre = "", apellido = ""}:any = req.query;
+
+    console.log("**************************-",nombre, apellido);
   
 
     try{

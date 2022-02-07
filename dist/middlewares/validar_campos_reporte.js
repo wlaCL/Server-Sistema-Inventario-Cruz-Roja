@@ -87,7 +87,7 @@ var existeRegistro = function (req, res, next) { return __awaiter(void 0, void 0
                 if (producto) {
                     return [2 /*return*/, res.status(400).json({
                             ok: false,
-                            msg: "El producto ya fue registrado"
+                            msg: "El producto ya se encuentra registrado"
                         })];
                 }
                 next();

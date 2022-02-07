@@ -139,18 +139,16 @@ export const getProductosAmbulanciaNombre = async (req:Request, res: Response)=>
 
 
 export const getProductosAmbulanciaID= async (req:Request, res: Response)=>{
-    const {placa="", id=""} = req.body;
-
+    const {placa="", id=""} = req.params;
 
     try{
         const data:any = await TProducto.findAll({
-            include:[
+           include:[
                 {
                     model: Categoria, 
                     attributes:['nombre'], 
                     where:{
                         estado:true, 
-                        nombre: "Varios"
                     }
                 },
                {
@@ -176,14 +174,17 @@ export const getProductosAmbulanciaID= async (req:Request, res: Response)=>{
                 estado:true,
             }
         });
-        if(!data){
-            return res.status(400).json({
+        
+        console.log("me ejecute hasta el final"); 
+        console.log(data);
+        if(data.length == 0){
+            return res.status(404).json({
                 ok: false, 
                 msg: "No hay regisros"
             })
         }    
-
-        return res.status(200).json({
+      
+        res.status(200).json({
             ok: true, 
             msg: "Consulta éxitosa", 
             data

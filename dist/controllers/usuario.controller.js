@@ -349,7 +349,8 @@ var getUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0,
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
-                _a = req.body, _b = _a.nombre, nombre = _b === void 0 ? "" : _b, _c = _a.apellido, apellido = _c === void 0 ? "" : _c;
+                _a = req.query, _b = _a.nombre, nombre = _b === void 0 ? "" : _b, _c = _a.apellido, apellido = _c === void 0 ? "" : _c;
+                console.log("**************************-", nombre, apellido);
                 _j.label = 1;
             case 1:
                 _j.trys.push([1, 3, , 4]);

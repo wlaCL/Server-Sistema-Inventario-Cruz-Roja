@@ -3,16 +3,7 @@ import db from '../db/connection.db';
 
 const Ambulancia = db.define('ambulancia',{
     num_vehiculo:{
-        type: DataTypes.STRING(10),
-        validate:{
-            isNumeric:{
-                msg: "El número de vehículo solo puede ser un número"
-            }, 
-            len:{
-                args:[1,10], 
-                msg:"El número de vehículo solo puede contener entre un dígito y diez dígitos"
-            }
-        } 
+        type: DataTypes.STRING,
     },  
     descripcion:{
         type: DataTypes.TEXT

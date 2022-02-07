@@ -46,8 +46,8 @@ export const postRegistroProducto = async(req: Request, res: Response)=>{
        });
 
 
-       
-        return res.status(201).json({
+       console.log("**********************************************************+")  
+        return res.status(200).json({
             ok: true, 
             msg: "Registro éxitoso", 
             registro

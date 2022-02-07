@@ -205,7 +205,7 @@ var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, vo
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
-                _a = req.body, _b = _a.placa, placa = _b === void 0 ? "" : _b, _c = _a.id, id = _c === void 0 ? "" : _c;
+                _a = req.params, _b = _a.placa, placa = _b === void 0 ? "" : _b, _c = _a.id, id = _c === void 0 ? "" : _c;
                 _d.label = 1;
             case 1:
                 _d.trys.push([1, 3, , 4]);
@@ -216,7 +216,6 @@ var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, vo
                                 attributes: ['nombre'],
                                 where: {
                                     estado: true,
-                                    nombre: "Varios"
                                 }
                             },
                             {
@@ -243,17 +242,20 @@ var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, vo
                     })];
             case 2:
                 data = _d.sent();
-                if (!data) {
-                    return [2 /*return*/, res.status(400).json({
+                console.log("me ejecute hasta el final");
+                console.log(data);
+                if (data.length == 0) {
+                    return [2 /*return*/, res.status(404).json({
                             ok: false,
                             msg: "No hay regisros"
                         })];
                 }
-                return [2 /*return*/, res.status(200).json({
-                        ok: true,
-                        msg: "Consulta éxitosa",
-                        data: data
-                    })];
+                res.status(200).json({
+                    ok: true,
+                    msg: "Consulta éxitosa",
+                    data: data
+                });
+                return [3 /*break*/, 4];
             case 3:
                 error_4 = _d.sent();
                 console.log(error_4);

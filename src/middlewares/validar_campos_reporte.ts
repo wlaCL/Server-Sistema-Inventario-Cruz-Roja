@@ -37,7 +37,7 @@ export const existeRegistro = async (req:Request, res:Response, next: NextFuncti
     if(producto){
        return res.status(400).json({
             ok: false, 
-            msg: "El producto ya fue registrado"
+            msg: "El producto ya se encuentra registrado"
         })
     }
     next()
