@@ -16,7 +16,7 @@ export const postAmbulancia = async(req:Request, res:Response) =>{
         }); 
        
         if(ambulancia){
-            return res.status(400).json({
+            return res.status(200).json({
                 ok: true,
                 msg:"Ambulancia registrada exitósamente", 
                 ambulancia

@@ -77,7 +77,7 @@ var postRegistroProducto = function (req, res) { return __awaiter(void 0, void 0
             case 3:
                 registro = _f.sent();
                 return [4 /*yield*/, producto_associations_1.Producto_Ambulancia.update({
-                        stock: producto.stock - cant_consumo + carga
+                        stock: (Number(producto.stock) - Number(cant_consumo) + Number(carga)).toString()
                     }, {
                         where: {
                             id_producambu: producto.id_producambu
@@ -85,7 +85,6 @@ var postRegistroProducto = function (req, res) { return __awaiter(void 0, void 0
                     })];
             case 4:
                 _f.sent();
-                console.log("**********************************************************+");
                 return [2 /*return*/, res.status(200).json({
                         ok: true,
                         msg: "Registro éxitoso",

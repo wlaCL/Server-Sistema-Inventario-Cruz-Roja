@@ -59,7 +59,7 @@ var postAmbulancia = function (req, res) { return __awaiter(void 0, void 0, void
             case 1:
                 ambulancia = _b.sent();
                 if (ambulancia) {
-                    return [2 /*return*/, res.status(400).json({
+                    return [2 /*return*/, res.status(200).json({
                             ok: true,
                             msg: "Ambulancia registrada exitósamente",
                             ambulancia: ambulancia

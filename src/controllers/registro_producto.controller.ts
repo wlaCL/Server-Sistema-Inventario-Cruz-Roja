@@ -38,15 +38,13 @@ export const postRegistroProducto = async(req: Request, res: Response)=>{
         });
 
        await Producto_Ambulancia.update({
-            stock: producto.stock - cant_consumo + carga
+            stock: (Number(producto.stock) - Number(cant_consumo) + Number(carga)).toString()
        },{
            where:{
                id_producambu: producto.id_producambu               
            }
        });
 
-
-       console.log("**********************************************************+")  
         return res.status(200).json({
             ok: true, 
             msg: "Registro éxitoso", 
