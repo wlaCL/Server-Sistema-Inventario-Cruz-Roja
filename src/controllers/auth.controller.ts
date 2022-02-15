@@ -6,7 +6,7 @@ import bycript from 'bcryptjs';
 export const loginApp =async(req:Request, res:Response)=>{
 
     try{
-        const {cedula, password} = req.body; 
+        const {cedula, password, dispositivo} = req.body; 
         const persona:any = await Persona.findByPk(cedula); 
 
         if(!persona){
@@ -55,6 +55,13 @@ export const loginApp =async(req:Request, res:Response)=>{
         }
 
         const token = await generarJWT(persona.cedula);
+        await Usuario.update({
+            dispositivo
+        },{
+            where:{
+                cedula
+            }
+        });
 
         res.status(200).json({
             ok: true, 

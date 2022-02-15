@@ -13,6 +13,8 @@ router.post('/app',[
         .isNumeric().withMessage("Cédula no válida"),
     body("password")
       .exists().withMessage("La contraseña es obligatoria"), 
+    body('dispositivo')
+    .exists().withMessage("El token del dispositivo es obligatorio"),
     validarCampos
 ],loginApp);
 

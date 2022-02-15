@@ -14,6 +14,10 @@ const Usuario = db.define('usuario', {
     roles_sistema:{
         type: DataTypes.STRING, 
         allowNull: false,
+    }, 
+    dispositivo:{
+        type: DataTypes.STRING, 
+        allowNull: true
     }
 },{
     tableName: 'usuario', 

@@ -44,12 +44,12 @@ var usuario_associations_1 = require("../associations/usuario.associations");
 var generar_jwt_1 = require("../helpers/generar_jwt");
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
 var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, cedula, password, persona, usuario, cuenta, validPassword, token, error_1;
+    var _a, cedula, password, dispositivo, persona, usuario, cuenta, validPassword, token, error_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 5, , 6]);
-                _a = req.body, cedula = _a.cedula, password = _a.password;
+                _b.trys.push([0, 6, , 7]);
+                _a = req.body, cedula = _a.cedula, password = _a.password, dispositivo = _a.dispositivo;
                 return [4 /*yield*/, usuario_associations_1.Persona.findByPk(cedula)];
             case 1:
                 persona = _b.sent();
@@ -97,22 +97,31 @@ var loginApp = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
                 return [4 /*yield*/, (0, generar_jwt_1.generarJWT)(persona.cedula)];
             case 4:
                 token = _b.sent();
+                return [4 /*yield*/, usuario_associations_1.Usuario.update({
+                        dispositivo: dispositivo
+                    }, {
+                        where: {
+                            cedula: cedula
+                        }
+                    })];
+            case 5:
+                _b.sent();
                 res.status(200).json({
                     ok: true,
                     msg: "Acceso Exitóso",
                     persona: persona,
                     token: token
                 });
-                return [3 /*break*/, 6];
-            case 5:
+                return [3 /*break*/, 7];
+            case 6:
                 error_1 = _b.sent();
                 console.log(error_1);
                 res.status(500).json({
                     ok: false,
                     msg: "Ha ocurrido un error contáctate con el administrador"
                 });
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); };

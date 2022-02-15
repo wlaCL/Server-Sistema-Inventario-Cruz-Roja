@@ -24,8 +24,7 @@ router.post('',[
         .exists().withMessage("El id_categoria es obligatorio")
         .isUUID(4).withMessage("No es un id_válido"),
     check('nombre')
-        .exists().withMessage("El nombre es obligatorio")
-        .matches(/^[A-Za-z\s]+$/).withMessage("No es un nombre válido"),
+        .exists().withMessage("El nombre es obligatorio"),
     check('tipo')
         .exists().withMessage("El tipo de producto es obligatorio")
         .isIn(['Insumo Medico', 'Equipo']).withMessage("El tipo de producto no es válido ['Insumo Medico', 'Equipo']"),

@@ -18,6 +18,10 @@ var Usuario = connection_db_1.default.define('usuario', {
     roles_sistema: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
+    },
+    dispositivo: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: 'usuario',

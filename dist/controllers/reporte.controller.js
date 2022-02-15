@@ -42,6 +42,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchReport = exports.getReporte = exports.putReporte = exports.postReporte = void 0;
 var reporte_associations_1 = require("../associations/reporte.associations");
 var moment_1 = __importDefault(require("moment"));
+var usuario_model_1 = __importDefault(require("../models/usuario.model"));
+var persona_model_1 = __importDefault(require("../models/persona.model"));
+var axios_1 = __importDefault(require("axios"));
 var postReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b, placa, _c, fecha, cedula, trabaja, reporte, error_1;
     return __generator(this, function (_d) {
@@ -99,18 +102,19 @@ var postReporte = function (req, res) { return __awaiter(void 0, void 0, void 0,
 }); };
 exports.postReporte = postReporte;
 var putReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, novedades, _c, base, _d, asistente, _e, conductor, _f, id, report, reporte, error_2;
+    var _a, _b, novedades, _c, base, _d, asistente, _e, conductor, _f, id, api, devices, report, reporte, userNotifieresReport, index, element, re, index, element, error_2;
     return __generator(this, function (_g) {
         switch (_g.label) {
             case 0:
                 _a = req.body, _b = _a.novedades, novedades = _b === void 0 ? "" : _b, _c = _a.base, base = _c === void 0 ? "" : _c, _d = _a.asistente, asistente = _d === void 0 ? "" : _d, _e = _a.conductor, conductor = _e === void 0 ? "" : _e, _f = _a.id, id = _f === void 0 ? "" : _f;
+                api = 'key=AAAA29qNbZc:APA91bEEX9oibqT5-n5wyxl8_OxleGEiPEx2BQ6Be_IeyVjPNoNlqT0cuc1R2ImoLZPKY09IjJ-uswDOZGeCA5dxjmCfWQsHd27I2z0lhCsVRjYOy7MOs7Y7JXHi3SamhkqrdGPmCgiW';
                 _g.label = 1;
             case 1:
-                _g.trys.push([1, 4, , 5]);
+                _g.trys.push([1, 10, , 11]);
+                devices = [];
                 return [4 /*yield*/, reporte_associations_1.Reporte.findByPk(id)];
             case 2:
                 report = _g.sent();
-                console.log(report);
                 if (report.base != null) {
                     return [2 /*return*/, res.status(401).json({
                             ok: false,
@@ -127,19 +131,74 @@ var putReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                         } })];
             case 3:
                 reporte = _g.sent();
+                return [4 /*yield*/, persona_model_1.default.findAll({
+                        attributes: ['cedula'],
+                        include: [
+                            {
+                                model: usuario_model_1.default,
+                                attributes: ['dispositivo'],
+                                where: {
+                                    roles_sistema: 'user_app'
+                                }
+                            }
+                        ],
+                        where: {
+                            estado: true,
+                        }
+                    })];
+            case 4:
+                userNotifieresReport = _g.sent();
+                for (index = 0; index < userNotifieresReport.length; index++) {
+                    element = userNotifieresReport[index].usuarios[0].dispositivo;
+                    if (element == null) {
+                        continue;
+                    }
+                    devices.push(element);
+                }
                 if (!reporte) {
                     return [2 /*return*/, res.status(400).json({
                             ok: false,
                             msg: "No se ha podido finalizar el reporte"
                         })];
                 }
+                return [4 /*yield*/, reporte_associations_1.Reporte.findByPk(id)];
+            case 5:
+                re = _g.sent();
+                index = 0;
+                _g.label = 6;
+            case 6:
+                if (!(index < devices.length)) return [3 /*break*/, 9];
+                element = devices[index];
+                return [4 /*yield*/, (0, axios_1.default)({
+                        method: 'post',
+                        url: 'https://fcm.googleapis.com/fcm/send',
+                        data: {
+                            notification: {
+                                "body": "Se ha generado exit\u00F3samente el reporte con placa " + re.placa + " y fecha " + re.fecha,
+                                "title": "Creacion de Reporte"
+                            },
+                            priority: "high",
+                            to: element
+                        },
+                        headers: {
+                            //'Content-Type': 'application/json'
+                            Authorization: api
+                        }
+                    })];
+            case 7:
+                _g.sent();
+                _g.label = 8;
+            case 8:
+                index++;
+                return [3 /*break*/, 6];
+            case 9:
                 res.status(200).json({
                     ok: true,
                     msg: "Reporte finalizado exitosamente",
                     reporte: reporte
                 });
-                return [3 /*break*/, 5];
-            case 4:
+                return [3 /*break*/, 11];
+            case 10:
                 error_2 = _g.sent();
                 console.log(error_2);
                 res.status(500).json({
@@ -148,8 +207,8 @@ var putReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                         msg: "Ha ocurrido un error contáctate con el administrador"
                     }
                 });
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 11];
+            case 11: return [2 /*return*/];
         }
     });
 }); };

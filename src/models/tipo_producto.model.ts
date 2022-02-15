@@ -22,13 +22,7 @@ const TProducto = db.define('tipo_producto',{
     }, 
     nombre:{
         type:DataTypes.STRING(50), 
-        allowNull:false, 
-        validate:{
-            is:{
-                args:[/^[A-Za-z\s]+$/], 
-                msg:"El nombre solo debe contener letras"
-            }
-        }
+        allowNull:false,
     }, 
     descripcion:{
         type:DataTypes.STRING(100),

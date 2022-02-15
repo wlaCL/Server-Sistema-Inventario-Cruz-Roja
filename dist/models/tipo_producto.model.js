@@ -27,12 +27,6 @@ var TProducto = connection_db_1.default.define('tipo_producto', {
     nombre: {
         type: sequelize_1.DataTypes.STRING(50),
         allowNull: false,
-        validate: {
-            is: {
-                args: [/^[A-Za-z\s]+$/],
-                msg: "El nombre solo debe contener letras"
-            }
-        }
     },
     descripcion: {
         type: sequelize_1.DataTypes.STRING(100),

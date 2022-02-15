@@ -2,12 +2,18 @@ import {Trabaja, Reporte} from '../associations/reporte.associations';
 
 import { Request, Response } from "express";
 import moment from 'moment';
+import Usuario from '../models/usuario.model';
+import { where } from 'sequelize/types';
+import Persona from '../models/persona.model';
+import axios from 'axios';
 
 
 export const postReporte = async(req:Request, res:Response)=>{
+    
 
     const {placa="",fecha=""} = req.body;
     const cedula = req.user;
+  
     
     try{
         const trabaja:any = await Trabaja.create({
@@ -52,10 +58,11 @@ export const postReporte = async(req:Request, res:Response)=>{
 
 export const putReporte  = async (req:Request, res:Response) =>{
     const {novedades="", base="", asistente="", conductor="", id=""} = req.body;
+    const api = 'key=AAAA29qNbZc:APA91bEEX9oibqT5-n5wyxl8_OxleGEiPEx2BQ6Be_IeyVjPNoNlqT0cuc1R2ImoLZPKY09IjJ-uswDOZGeCA5dxjmCfWQsHd27I2z0lhCsVRjYOy7MOs7Y7JXHi3SamhkqrdGPmCgiW';
 
     try{
+        const devices:any = [];
         const report:any = await Reporte.findByPk(id);
-        console.log(report);
 
         if(report.base != null ){
             return res.status(401).json({
@@ -73,6 +80,33 @@ export const putReporte  = async (req:Request, res:Response) =>{
             id_reporte: id
         }});
 
+        const userNotifieresReport:any = await  Persona.findAll(
+            {
+                attributes:['cedula'], 
+                include:[
+                    {
+                        model: Usuario, 
+                        attributes:['dispositivo'], 
+                        where:{
+                            roles_sistema: 'user_app'
+                        }
+                    }
+                ],
+                where:{
+                    estado:true, 
+                }
+            },           
+        ); 
+        
+        for (let index = 0; index < userNotifieresReport.length; index++) {
+            const element = userNotifieresReport[index].usuarios[0].dispositivo;
+            if(element == null){
+                continue
+            }
+            devices.push(element);        
+        }
+        
+
 
         if(!reporte){
             return res.status(400).json({
@@ -81,12 +115,40 @@ export const putReporte  = async (req:Request, res:Response) =>{
             });
         }
 
+       /* res.status(200).json({
+            ok: true, 
+            msg: "Reporte finalizado exitosamente", 
+            reporte
+        })*/
+        const re:any = await Reporte.findByPk(id);
+        
+        for (let index = 0; index < devices.length; index++) {
+            const element = devices [index];
+            await  axios({
+                method: 'post', //you can set what request you want to be
+                url: 'https://fcm.googleapis.com/fcm/send',
+                data:{
+                    notification: {
+                        "body": `Se ha generado exitósamente el reporte con placa ${re.placa} y fecha ${re.fecha}` ,
+                        "title": "Creacion de Reporte"
+                    },
+                    priority: "high",  
+                    to: element                    
+                },
+                headers: {
+                    //'Content-Type': 'application/json'
+                  Authorization: api
+                }
+              })
+            
+        }
+       
+
         res.status(200).json({
             ok: true, 
             msg: "Reporte finalizado exitosamente", 
             reporte
         })
-
 
     }catch(error){
         console.log(error); 
