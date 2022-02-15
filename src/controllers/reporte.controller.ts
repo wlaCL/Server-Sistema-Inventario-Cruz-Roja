@@ -148,3 +148,34 @@ export const getReporte = async (req:Request, res:Response)=>{
        });
    }
 }
+
+
+export const searchReport =async (req:Request, res:Response)=>{
+    const {fecha = "", placa = ""} = req.query; 
+    try{
+        const reportes:any = await Reporte.findAll({
+            where:{
+                placa, 
+                fecha
+            }
+        });
+
+        if(reportes.length === 0){
+            return res.status(404).json({
+                ok: false, 
+                msg: 'No se han encontrado resultados'
+            });
+        }
+
+        res.status(200).json({
+            ok: true, 
+            msg: 'Consulta exitosa',
+            reportes
+        });
+    }catch{
+        res.status(500).json({
+            ok:false, 
+            msg: "Ha ocurrido un error contáctate con el administrador"
+        });
+    }
+}

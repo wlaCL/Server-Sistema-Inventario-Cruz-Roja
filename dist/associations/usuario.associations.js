@@ -8,6 +8,8 @@ Object.defineProperty(exports, "Cuenta_Acceso", { enumerable: true, get: functio
 // Una persona puede tener varios roles en el sistema
 models_1.Persona.hasMany(models_1.Usuario, { foreignKey: 'cedula' });
 models_1.Usuario.belongsTo(models_1.Persona, { foreignKey: 'cedula' });
+models_1.Persona.hasMany(models_1.Trabaja, { foreignKey: 'cedula' });
+models_1.Trabaja.belongsTo(models_1.Persona, { foreignKey: 'cedula' });
 //Un usuario puede tener una sola cuenta de acceso
 models_1.Usuario.hasOne(models_1.Cuenta_Acceso, { foreignKey: 'id_usuario' });
 models_1.Cuenta_Acceso.belongsTo(models_1.Usuario, { foreignKey: 'id_usuario' });

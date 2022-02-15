@@ -1,11 +1,13 @@
 import {Router} from "express";
-import { check } from "express-validator";
+import { check, query} from "express-validator";
 import { existeAmbulanciaValida } from '../db/ambulancia_validators.db';
-import { postReporte, getReporte, putReporte} from '../controllers/reporte.controller';
+import { postReporte, getReporte, putReporte, searchReport } from '../controllers/reporte.controller';
 import { validarCampos } from '../middlewares/validar_campos';
 import { ExistAuthorAmbulance } from '../middlewares/validar_campos_reporte';
 import { validarJWT } from '../middlewares/validar_jwt.middleware';
 import { isUserApp } from "../middlewares/validar_rol";
+import { createReportPDF } from '../controllers/create_report.controller';
+import { existReport, existReportFinish } from '../db/reporte_validators.db';
 const router = Router(); 
 
 
@@ -59,5 +61,29 @@ router.post('/exist',[
     check('placa').custom(existeAmbulanciaValida), 
     validarCampos
 ], getReporte);
+
+
+router.get('/search/pdf/:id',[
+    validarJWT,
+    check('id')
+        .isUUID(4).withMessage("Identificador no válido")
+        .isLength({min: 36, max: 36}).withMessage("Identificador no válido"),
+    check('id').custom(existReport), 
+    check('id').custom(existReportFinish), 
+    validarCampos    
+], createReportPDF);
+
+
+router.get('/search/data/report',[
+    validarJWT,
+    query('fecha')
+    .exists().withMessage("La fecha es obligatoria")
+    .isDate().withMessage("La fecha debe tener el formato AAAA/MM/DD"),
+    query('placa')
+    .exists().withMessage('La placa es obligatoria')
+    .isAlphanumeric().withMessage("La placa solo debe contener números y letras")
+    .isLength({min: 7, max: 7}).withMessage("La placa debe contener 7 dígitos"), 
+    validarCampos
+],searchReport);
 
 export default router;

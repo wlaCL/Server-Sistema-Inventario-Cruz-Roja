@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getReporte = exports.putReporte = exports.postReporte = void 0;
+exports.searchReport = exports.getReporte = exports.putReporte = exports.postReporte = void 0;
 var reporte_associations_1 = require("../associations/reporte.associations");
 var moment_1 = __importDefault(require("moment"));
 var postReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -214,4 +214,45 @@ var getReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.getReporte = getReporte;
+var searchReport = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, fecha, _c, placa, reportes, _d;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
+            case 0:
+                _a = req.query, _b = _a.fecha, fecha = _b === void 0 ? "" : _b, _c = _a.placa, placa = _c === void 0 ? "" : _c;
+                _e.label = 1;
+            case 1:
+                _e.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, reporte_associations_1.Reporte.findAll({
+                        where: {
+                            placa: placa,
+                            fecha: fecha
+                        }
+                    })];
+            case 2:
+                reportes = _e.sent();
+                if (reportes.length === 0) {
+                    return [2 /*return*/, res.status(404).json({
+                            ok: false,
+                            msg: 'No se han encontrado resultados'
+                        })];
+                }
+                res.status(200).json({
+                    ok: true,
+                    msg: 'Consulta exitosa',
+                    reportes: reportes
+                });
+                return [3 /*break*/, 4];
+            case 3:
+                _d = _e.sent();
+                res.status(500).json({
+                    ok: false,
+                    msg: "Ha ocurrido un error contáctate con el administrador"
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.searchReport = searchReport;
 //# sourceMappingURL=reporte.controller.js.map

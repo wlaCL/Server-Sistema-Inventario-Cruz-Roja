@@ -8,6 +8,8 @@ var validar_campos_1 = require("../middlewares/validar_campos");
 var validar_campos_reporte_1 = require("../middlewares/validar_campos_reporte");
 var validar_jwt_middleware_1 = require("../middlewares/validar_jwt.middleware");
 var validar_rol_1 = require("../middlewares/validar_rol");
+var create_report_controller_1 = require("../controllers/create_report.controller");
+var reporte_validators_db_1 = require("../db/reporte_validators.db");
 var router = (0, express_1.Router)();
 router.post('', [
     validar_jwt_middleware_1.validarJWT,
@@ -56,5 +58,25 @@ router.post('/exist', [
     (0, express_validator_1.check)('placa').custom(ambulancia_validators_db_1.existeAmbulanciaValida),
     validar_campos_1.validarCampos
 ], reporte_controller_1.getReporte);
+router.get('/search/pdf/:id', [
+    validar_jwt_middleware_1.validarJWT,
+    (0, express_validator_1.check)('id')
+        .isUUID(4).withMessage("Identificador no válido")
+        .isLength({ min: 36, max: 36 }).withMessage("Identificador no válido"),
+    (0, express_validator_1.check)('id').custom(reporte_validators_db_1.existReport),
+    (0, express_validator_1.check)('id').custom(reporte_validators_db_1.existReportFinish),
+    validar_campos_1.validarCampos
+], create_report_controller_1.createReportPDF);
+router.get('/search/data/report', [
+    validar_jwt_middleware_1.validarJWT,
+    (0, express_validator_1.query)('fecha')
+        .exists().withMessage("La fecha es obligatoria")
+        .isDate().withMessage("La fecha debe tener el formato AAAA/MM/DD"),
+    (0, express_validator_1.query)('placa')
+        .exists().withMessage('La placa es obligatoria')
+        .isAlphanumeric().withMessage("La placa solo debe contener números y letras")
+        .isLength({ min: 7, max: 7 }).withMessage("La placa debe contener 7 dígitos"),
+    validar_campos_1.validarCampos
+], reporte_controller_1.searchReport);
 exports.default = router;
 //# sourceMappingURL=reporte.route.js.map
