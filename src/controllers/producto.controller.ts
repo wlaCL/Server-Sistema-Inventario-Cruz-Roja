@@ -190,16 +190,8 @@ export const getProductoTodos = async(req: Request, res: Response)=>{
                     attributes:['nombre', 'descripcion'], 
                     where:{
                         estado: true
-                    },
-                    
+                    },                    
                 },
-
-                {
-                    model: Producto, 
-                    where:{
-                        estado: true
-                    }
-                }
             ],
             where: {
                 estado: true

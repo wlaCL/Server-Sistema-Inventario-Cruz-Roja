@@ -259,12 +259,6 @@ var getProductoTodos = function (req, res) { return __awaiter(void 0, void 0, vo
                                     estado: true
                                 },
                             },
-                            {
-                                model: producto_associations_1.Producto,
-                                where: {
-                                    estado: true
-                                }
-                            }
                         ],
                         where: {
                             estado: true

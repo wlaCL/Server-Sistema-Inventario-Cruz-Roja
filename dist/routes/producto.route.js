@@ -134,8 +134,7 @@ router.post('/app', [
         .exists().withMessage("El id de la categoria es obligatorio")
         .isUUID(4).withMessage("El id es obligatorio"),
     (0, express_validator_1.check)('nombre')
-        .exists().withMessage("El nombre es obligatorio")
-        .matches(/^[A-Za-z\s]+$/).withMessage("No es un nombre válido"),
+        .exists().withMessage("El nombre es obligatorio"),
     (0, express_validator_1.check)('placa')
         .exists().withMessage("La placa es obligatoria")
         .isLength({ min: 7, max: 7 }).withMessage("La placa debe contener 7 caracteres"),
