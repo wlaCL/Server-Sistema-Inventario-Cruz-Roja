@@ -192,6 +192,10 @@ export const getProductoTodos = async(req: Request, res: Response)=>{
                         estado: true
                     },                    
                 },
+
+                {
+                    model: Producto
+                }
             ],
             where: {
                 estado: true

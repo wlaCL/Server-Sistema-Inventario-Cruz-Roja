@@ -14,15 +14,12 @@ export const crearProductoApp = async(req:Request, res: Response)=>{
             tipo,
             descripcion,
             can_minima: 0           
-        }); 
-        console.log(cantidad);
+        });
 
         const producto:any = await Producto.create({
             id_tipoprod: tipo_producto.id_tipoprod, 
             cantidad
-        });
-        console.log(producto);
-        
+        });        
         const producto_ambulancia = await Producto_Ambulancia.create({
             id_producto: producto.id_producto,
             placa,

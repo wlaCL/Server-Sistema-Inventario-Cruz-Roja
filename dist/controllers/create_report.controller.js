@@ -53,7 +53,7 @@ var PdfkitConstruct = require('pdfkit-construct');
 var ambulancia_model_1 = __importDefault(require("../models/ambulancia.model"));
 var PDFDocument = require("pdfkit-table");
 var createReportPDF = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, productos, reporte, doc_1, filename, stream_1, index, element, i, product, rowsProducts, j, pr, generalObj, table, error_1;
+    var _a, id, productos, reporte, error_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -78,7 +78,7 @@ var createReportPDF = function (req, res) { return __awaiter(void 0, void 0, voi
                                                 include: [
                                                     {
                                                         model: registro_producto_1.default,
-                                                        attributes: ['cant_consumo', 'carga'],
+                                                        //attributes:['cant_consumo', 'carga'], 
                                                         include: [
                                                             {
                                                                 model: reporte_model_1.default,
@@ -123,117 +123,167 @@ var createReportPDF = function (req, res) { return __awaiter(void 0, void 0, voi
                     })];
             case 3:
                 reporte = _b.sent();
-                doc_1 = new PDFDocument({ margin: 30, size: 'A4' });
-                filename = 'reporte00001.pdf';
-                stream_1 = res.writeHead(200, {
+                /*
+                const doc = new PDFDocument({ margin: 30, size: 'A4' });
+        
+        
+                const filename = 'reporte00001.pdf'
+        
+                const stream = res.writeHead(200,{
                     'content-Type': 'application/pdf',
-                    'Content-disposition': "attachment;filename=" + filename
+                    'Content-disposition': `attachment;filename=${filename}`
                 });
-                doc_1.on('data', function (data) { stream_1.write(data); });
-                doc_1.on('end', function () { stream_1.end(); });
-                doc_1
-                    .font('Times-Bold')
-                    .fontSize(15)
-                    .text("CRUZ ROJA ECUATORIANA", {
+        
+                
+                doc.on('data', (data:any)=>{stream.write(data)});
+                doc.on('end', ()=>{stream.end()});
+        
+                
+                
+                doc
+                .font('Times-Bold')
+                .fontSize(15)
+                .text(`CRUZ ROJA ECUATORIANA`,{
+                      with: 440,
+                      align: 'center'
+                   });
+                
+                doc
+                .font('Times-Bold')
+                .fontSize(10)
+                .text(`JUNTA PROVINCIAL DE SANTO DOMINGO DE LOS TSÁCHILAS`,{
+                         with: 440,
+                         align: 'center'
+                      });
+        
+                doc
+                .font('Times-Bold')
+                .fontSize(10)
+                .text(`HOJA DE CONTROL DE AMBULANCIA`,{
                     with: 440,
                     align: 'center'
                 });
-                doc_1
-                    .font('Times-Bold')
-                    .fontSize(10)
-                    .text("JUNTA PROVINCIAL DE SANTO DOMINGO DE LOS TS\u00C1CHILAS", {
-                    with: 440,
-                    align: 'center'
-                });
-                doc_1
-                    .font('Times-Bold')
-                    .fontSize(10)
-                    .text("HOJA DE CONTROL DE AMBULANCIA", {
-                    with: 440,
-                    align: 'center'
-                });
-                doc_1
-                    .font('Times-Roman')
-                    .fontSize(10)
-                    .text("Fecha: " + reporte.fecha, {
+        
+                doc
+                .font('Times-Roman')
+                .fontSize(10)
+                .text(`Fecha: ${reporte.fecha}`,{
                     with: 440,
                     align: 'left'
                 });
-                doc_1
-                    .font('Times-Roman')
-                    .fontSize(10)
-                    .text("Responsable (Param\u00E9dico): " + reporte.trabaja.persona.nombre + "  " + reporte.trabaja.persona.apellido + "                                                                                       Base: " + reporte.base, {
+        
+                doc
+                .font('Times-Roman')
+                .fontSize(10)
+                .text(`Responsable (Paramédico): ${reporte.trabaja.persona.nombre}  ${reporte.trabaja.persona.apellido}                                                                                       Base: ${reporte.base}`,{
                     with: 440,
                     align: 'left'
                 });
-                doc_1
-                    .font('Times-Roman')
-                    .fontSize(10)
-                    .text("Asistente: " + reporte.asistente + "                                                                                                                                M\u00F3vil: " + reporte.trabaja.persona.ambulancia[0].num_vehiculo, {
+                
+                doc
+                .font('Times-Roman')
+                .fontSize(10)
+                .text(`Asistente: ${reporte.asistente}                                                                                                                                Móvil: ${reporte.trabaja.persona.ambulancia[0].num_vehiculo}`,{
                     with: 440,
                     align: 'left'
                 });
-                doc_1
-                    .font('Times-Roman')
-                    .fontSize(10)
-                    .text("Conductor: " + reporte.conductor, {
+        
+                doc
+                .font('Times-Roman')
+                .fontSize(10)
+                .text(`Conductor: ${reporte.conductor}`,{
                     with: 440,
                     align: 'left'
                 });
-                // todo el código va aquí
-                for (index = 0; index < productos.length; index++) {
-                    element = productos[index];
-                    for (i = 0; i < element.tipo_productos.length; i++) {
-                        product = element.tipo_productos[i];
-                        rowsProducts = [];
-                        for (j = 0; j < product.productos.length; j++) {
-                            pr = product.productos[j];
-                            generalObj = {
-                                options: { fontSize: 10, separation: true },
-                                fecha: (pr.fecha_caducidad != null) ? "" + pr.fecha_caducidad : 'N/A',
-                                cant_consumo: "" + pr.producto_ambulancia[0].registro_productos[0].cant_consumo,
-                                carga: "" + pr.producto_ambulancia[0].registro_productos[0].carga,
-                                stock: "" + pr.producto_ambulancia[0].stock,
-                            };
+        
+               
+               // todo el código va aquí
+                
+                for (let index = 0; index < productos.length; index++) {
+                    var element = productos[index];
+                    for (let i = 0; i < element.tipo_productos.length; i++) {
+                        var product = element.tipo_productos[i];
+                        var rowsProducts = [];
+        
+                        for (let j = 0; j < product.productos.length; j++) {
+                            const pr = product.productos[j];
+                            
+                            const generalObj ={
+                                options: { fontSize: 10, separation: true},
+                                fecha: (pr.fecha_caducidad != null)?`${pr.fecha_caducidad}`: 'N/A',
+                                cant_consumo: `${pr.producto_ambulancia[0].registro_productos[0].cant_consumo}`,
+                                carga: `${pr.producto_ambulancia[0].registro_productos[0].carga}`,
+                                stock: `${pr.producto_ambulancia[0].stock}`,
+                                
+                            }
                             rowsProducts.push(generalObj);
+        
                         }
-                        table = {
+        
+                        const table = {
                             //title: `Categoría: ${element.nombre}`,
                             //subtitle: `Producto: ${product.nombre}`,
                             headers: [
-                                { label: "Fecha", property: 'fecha', width: 60, renderer: null },
-                                { label: "Cantidad de consumo", property: 'cant_consumo', width: 100, renderer: null },
-                                { label: "Carga", property: 'carga', width: 100, renderer: null },
-                                { label: "Stock", property: 'stock', width: 80, renderer: null },
+                              { label:"Fecha", property: 'fecha', width: 60, renderer: null },
+                              { label:"Cantidad de consumo", property: 'cant_consumo', width: 100, renderer: null },
+                              { label:"Carga", property: 'carga', width: 100, renderer: null },
+                              { label:"Stock", property: 'stock', width: 80, renderer: null },
                             ],
+        
                             datas: rowsProducts
-                        };
-                        doc_1
-                            .font('Times-Bold')
-                            .fontSize(12)
-                            .text("Categoria: " + element.nombre, {
-                            with: 440,
-                            align: 'left'
-                        });
-                        doc_1
-                            .font('Times-Bold')
-                            .fontSize(10)
-                            .text("Producto: " + product.nombre, {
-                            with: 440,
-                            align: 'left'
-                        });
-                        doc_1.table(table, {
+                          };
+                            doc
+                                .font('Times-Bold')
+                                .fontSize(12)
+                                .text(`Categoria: ${element.nombre}`,{
+                                    with: 440,
+                                    align: 'left'
+                            });
+        
+                            doc
+                                .font('Times-Bold')
+                                .fontSize(10)
+                                .text(`Producto: ${product.nombre}`,{
+                                    with: 440,
+                                    align: 'left'
+                            });
+        
+                          doc.table( table, {
                             width: 300,
                             columnSpacing: 5,
-                            prepareHeader: function () { return doc_1.font("Helvetica-Bold").fontSize(8); },
-                            prepareRow: function (row, indexColumn, indexRow, rectRow, rectCell) {
-                                doc_1.font("Helvetica").fontSize(8);
-                                indexColumn === 0 && doc_1.addBackground(rectRow, 'blue', 0.15);
-                            },
-                        });
+                            prepareHeader: () => doc.font("Helvetica-Bold").fontSize(8), // {Function}
+                            prepareRow: (row:any, indexColumn:any, indexRow:any, rectRow:any, rectCell:any) => {
+                            doc.font("Helvetica").fontSize(8);
+                            indexColumn === 0 && doc.addBackground(rectRow, 'blue', 0.15)
+                        },
+                            
+                          });
+                                        
                     }
                 }
-                doc_1.end();
+                 
+                doc
+                .font('Times-Bold')
+                .fontSize(12)
+                .text(`Novedades: ${reporte.conductor}`,{
+                    with: 440,
+                    align: 'left'
+                });
+        
+                doc
+                .font('Times-Roman')
+                .fontSize(12)
+                .text(`${reporte.novedades}`,{
+                    with: 440,
+                    align: 'left'
+                });
+              
+                doc.end();*/
+                res.status(200).json({
+                    ok: true,
+                    msg: "TODO SALIO BIEN",
+                    productos: productos
+                });
                 return [3 /*break*/, 5];
             case 4:
                 error_1 = _b.sent();

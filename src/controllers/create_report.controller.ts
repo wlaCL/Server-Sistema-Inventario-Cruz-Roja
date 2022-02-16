@@ -38,7 +38,7 @@ export const createReportPDF = async (req:Request, res: Response)=>{
                                     include:[
                                         {
                                             model: Registro_Producto, 
-                                            attributes:['cant_consumo', 'carga'], 
+                                            //attributes:['cant_consumo', 'carga'], 
                                             include:[
                                                 {
                                                     model: Reporte,
@@ -81,7 +81,7 @@ export const createReportPDF = async (req:Request, res: Response)=>{
                 id_reporte: id
             }
         });       
-
+        /*
         const doc = new PDFDocument({ margin: 30, size: 'A4' });
 
 
@@ -165,6 +165,7 @@ export const createReportPDF = async (req:Request, res: Response)=>{
 
                 for (let j = 0; j < product.productos.length; j++) {
                     const pr = product.productos[j];
+                    
                     const generalObj ={
                         options: { fontSize: 10, separation: true},
                         fecha: (pr.fecha_caducidad != null)?`${pr.fecha_caducidad}`: 'N/A',
@@ -219,14 +220,29 @@ export const createReportPDF = async (req:Request, res: Response)=>{
             }                                                             
         }
          
+        doc
+        .font('Times-Bold')
+        .fontSize(12)
+        .text(`Novedades: ${reporte.conductor}`,{
+            with: 440,
+            align: 'left'
+        });
+
+        doc
+        .font('Times-Roman')
+        .fontSize(12)
+        .text(`${reporte.novedades}`,{
+            with: 440,
+            align: 'left'
+        });
       
-        doc.end();
+        doc.end();*/
         
-       /* res.status(200).json({
+        res.status(200).json({
             ok: true, 
             msg: "TODO SALIO BIEN", 
-            reporte
-        })*/
+            productos
+        })
     }
     catch(error){
         console.log(error);

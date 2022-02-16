@@ -59,14 +59,12 @@ var crearProductoApp = function (req, res) { return __awaiter(void 0, void 0, vo
                     })];
             case 1:
                 tipo_producto = _h.sent();
-                console.log(cantidad);
                 return [4 /*yield*/, producto_associations_1.Producto.create({
                         id_tipoprod: tipo_producto.id_tipoprod,
                         cantidad: cantidad
                     })];
             case 2:
                 producto = _h.sent();
-                console.log(producto);
                 return [4 /*yield*/, producto_ambulancia_1.default.create({
                         id_producto: producto.id_producto,
                         placa: placa,
