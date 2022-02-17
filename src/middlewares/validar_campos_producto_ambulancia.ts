@@ -126,9 +126,9 @@ export const existeNombreProductoAmbulancia = async(req:Request, res:Response, n
       nombre,
     }
   });
-  console.log(producto)
+  
   if(producto){
-    res.status(400).json({
+    return res.status(400).json({
       ok:false, 
       msg: `El producto ya se encuentra registrado con la placa  ${placa}`,
       producto

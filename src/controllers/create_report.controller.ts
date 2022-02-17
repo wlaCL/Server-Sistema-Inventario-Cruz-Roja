@@ -11,13 +11,14 @@ import Categoria from '../models/categoria.model';
 const PdfkitConstruct = require('pdfkit-construct');
 //import PdfkitConstruct from 'pdfkit-construct';
 import Ambulancia from '../models/ambulancia.model';
-import { where } from 'sequelize';
 const PDFDocument = require("pdfkit-table");  
 
 
 
 export const createReportPDF = async (req:Request, res: Response)=>{
+    console.log("Soy la funcion correcta**************************")
     const {id = ""} = req.params;
+    console.log(id);
 
     try{
 
@@ -27,18 +28,22 @@ export const createReportPDF = async (req:Request, res: Response)=>{
                 {
                     model: TProducto, 
                     attributes:['nombre', 'id_tipoprod'],
+                    where:{},
                     include: [
                         {
                             model:Producto,
                             attributes:['fecha_caducidad', 'id_producto'], 
+                            where:{},
                             include:[
                                 {
                                     model: Producto_Ambulancia,
                                     attributes: ['id_producambu', 'stock'], 
+                                    where:{},
                                     include:[
                                         {
                                             model: Registro_Producto, 
-                                            //attributes:['cant_consumo', 'carga'], 
+                                            attributes:['cant_consumo', 'carga'], 
+                                            where:{},
                                             include:[
                                                 {
                                                     model: Reporte,
@@ -81,7 +86,8 @@ export const createReportPDF = async (req:Request, res: Response)=>{
                 id_reporte: id
             }
         });       
-        /*
+        
+        
         const doc = new PDFDocument({ margin: 30, size: 'A4' });
 
 
@@ -133,7 +139,7 @@ export const createReportPDF = async (req:Request, res: Response)=>{
         doc
         .font('Times-Roman')
         .fontSize(10)
-        .text(`Responsable (Paramédico): ${reporte.trabaja.persona.nombre}  ${reporte.trabaja.persona.apellido}                                                                                       Base: ${reporte.base}`,{
+        .text(`Responsable (Paramédico): ${reporte.trabaja.persona.nombre}  ${reporte.trabaja.persona.apellido}                                                      Base: ${reporte.base}`,{
             with: 440,
             align: 'left'
         });
@@ -141,7 +147,7 @@ export const createReportPDF = async (req:Request, res: Response)=>{
         doc
         .font('Times-Roman')
         .fontSize(10)
-        .text(`Asistente: ${reporte.asistente}                                                                                                                                Móvil: ${reporte.trabaja.persona.ambulancia[0].num_vehiculo}`,{
+        .text(`Asistente: ${reporte.asistente}                                                                                  Móvil: ${reporte.trabaja.persona.ambulancia[0].num_vehiculo}`,{
             with: 440,
             align: 'left'
         });
@@ -160,23 +166,25 @@ export const createReportPDF = async (req:Request, res: Response)=>{
         for (let index = 0; index < productos.length; index++) {
             var element = productos[index];
             for (let i = 0; i < element.tipo_productos.length; i++) {
+
                 var product = element.tipo_productos[i];
                 var rowsProducts = [];
 
                 for (let j = 0; j < product.productos.length; j++) {
+
                     const pr = product.productos[j];
                     
                     const generalObj ={
                         options: { fontSize: 10, separation: true},
-                        fecha: (pr.fecha_caducidad != null)?`${pr.fecha_caducidad}`: 'N/A',
-                        cant_consumo: `${pr.producto_ambulancia[0].registro_productos[0].cant_consumo}`, 
-                        carga: `${pr.producto_ambulancia[0].registro_productos[0].carga}`, 
-                        stock: `${pr.producto_ambulancia[0].stock}`, 
-                        
+                        fecha: (pr.fecha_caducidad != undefined)?`${pr.fecha_caducidad}`:'N/A',
+                        cant_consumo: (pr.producto_ambulancia[0].registro_productos[0].cant_consumo != undefined)?`${pr.producto_ambulancia[0].registro_productos[0].cant_consumo}`:'N/A', 
+                        carga: (pr.producto_ambulancia[0].registro_productos[0].carga != undefined)? `${pr.producto_ambulancia[0].registro_productos[0].carga}`: 'N/A', 
+                        stock: (pr.producto_ambulancia[0].stock != undefined)?`${pr.producto_ambulancia[0].stock}`: 'N/A', 
                     }
                     rowsProducts.push(generalObj);
 
                 }
+
 
                 const table = {
                     //title: `Categoría: ${element.nombre}`,
@@ -223,7 +231,7 @@ export const createReportPDF = async (req:Request, res: Response)=>{
         doc
         .font('Times-Bold')
         .fontSize(12)
-        .text(`Novedades: ${reporte.conductor}`,{
+        .text(`Novedades:`,{
             with: 440,
             align: 'left'
         });
@@ -236,13 +244,13 @@ export const createReportPDF = async (req:Request, res: Response)=>{
             align: 'left'
         });
       
-        doc.end();*/
+        doc.end();
         
-        res.status(200).json({
+        /*res.status(200).json({
             ok: true, 
             msg: "TODO SALIO BIEN", 
             productos
-        })
+        });*/
     }
     catch(error){
         console.log(error);

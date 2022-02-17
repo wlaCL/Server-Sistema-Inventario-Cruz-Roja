@@ -45,6 +45,8 @@ var moment_1 = __importDefault(require("moment"));
 var usuario_model_1 = __importDefault(require("../models/usuario.model"));
 var persona_model_1 = __importDefault(require("../models/persona.model"));
 var axios_1 = __importDefault(require("axios"));
+var sequelize_1 = require("sequelize");
+var registro_producto_1 = __importDefault(require("../models/registro_producto"));
 var postReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b, placa, _c, fecha, cedula, trabaja, reporte, error_1;
     return __generator(this, function (_d) {
@@ -275,21 +277,39 @@ var getReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 exports.getReporte = getReporte;
 var searchReport = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b, fecha, _c, placa, reportes, _d;
-    return __generator(this, function (_e) {
-        switch (_e.label) {
+    var _e;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
             case 0:
                 _a = req.query, _b = _a.fecha, fecha = _b === void 0 ? "" : _b, _c = _a.placa, placa = _c === void 0 ? "" : _c;
-                _e.label = 1;
+                _f.label = 1;
             case 1:
-                _e.trys.push([1, 3, , 4]);
+                _f.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, reporte_associations_1.Reporte.findAll({
+                        include: [
+                            {
+                                model: registro_producto_1.default,
+                                where: {}
+                            },
+                            {
+                                model: reporte_associations_1.Trabaja,
+                                include: [
+                                    {
+                                        model: persona_model_1.default
+                                    }
+                                ]
+                            }
+                        ],
                         where: {
                             placa: placa,
-                            fecha: fecha
+                            fecha: fecha,
+                            base: (_e = {},
+                                _e[sequelize_1.Op.not] = null,
+                                _e)
                         }
                     })];
             case 2:
-                reportes = _e.sent();
+                reportes = _f.sent();
                 if (reportes.length === 0) {
                     return [2 /*return*/, res.status(404).json({
                             ok: false,
@@ -303,7 +323,7 @@ var searchReport = function (req, res) { return __awaiter(void 0, void 0, void 0
                 });
                 return [3 /*break*/, 4];
             case 3:
-                _d = _e.sent();
+                _d = _f.sent();
                 res.status(500).json({
                     ok: false,
                     msg: "Ha ocurrido un error contáctate con el administrador"

@@ -198,13 +198,12 @@ var existeNombreProductoAmbulancia = function (req, res, next) { return __awaite
                     })];
             case 1:
                 producto = _e.sent();
-                console.log(producto);
                 if (producto) {
-                    res.status(400).json({
-                        ok: false,
-                        msg: "El producto ya se encuentra registrado con la placa  " + placa,
-                        producto: producto
-                    });
+                    return [2 /*return*/, res.status(400).json({
+                            ok: false,
+                            msg: "El producto ya se encuentra registrado con la placa  " + placa,
+                            producto: producto
+                        })];
                 }
                 next();
                 return [2 /*return*/];

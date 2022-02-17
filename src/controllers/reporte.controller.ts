@@ -6,6 +6,8 @@ import Usuario from '../models/usuario.model';
 import { where } from 'sequelize/types';
 import Persona from '../models/persona.model';
 import axios from 'axios';
+import { Op } from 'sequelize';
+import Registro_Producto from '../models/registro_producto';
 
 
 export const postReporte = async(req:Request, res:Response)=>{
@@ -216,9 +218,26 @@ export const searchReport =async (req:Request, res:Response)=>{
     const {fecha = "", placa = ""} = req.query; 
     try{
         const reportes:any = await Reporte.findAll({
+            include:[
+                {
+                    model: Registro_Producto, 
+                    where:{}
+                }, 
+                {
+                    model: Trabaja,
+                    include:[
+                        {
+                            model: Persona
+                        }
+                    ]
+                }
+            ], 
             where:{
                 placa, 
-                fecha
+                fecha, 
+                base:{
+                   [Op.not]:null
+                }
             }
         });
 
