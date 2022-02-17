@@ -59,7 +59,7 @@ router.post('/exist', [
     validar_campos_1.validarCampos
 ], reporte_controller_1.getReporte);
 router.get('/search/pdf/:id', [
-    validar_jwt_middleware_1.validarJWT,
+    //validarJWT,
     (0, express_validator_1.check)('id')
         .isUUID(4).withMessage("Identificador no válido")
         .isLength({ min: 36, max: 36 }).withMessage("Identificador no válido"),
@@ -68,7 +68,7 @@ router.get('/search/pdf/:id', [
     validar_campos_1.validarCampos
 ], create_report_controller_1.createReportPDF);
 router.get('/search/data/report', [
-    //validarJWT,
+    validar_jwt_middleware_1.validarJWT,
     (0, express_validator_1.query)('fecha')
         .exists().withMessage("La fecha es obligatoria")
         .isDate().withMessage("La fecha debe tener el formato AAAA/MM/DD"),

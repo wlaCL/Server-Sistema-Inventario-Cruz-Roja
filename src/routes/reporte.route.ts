@@ -64,7 +64,7 @@ router.post('/exist',[
 
 
 router.get('/search/pdf/:id',[
-    validarJWT,
+    //validarJWT,
     check('id')
         .isUUID(4).withMessage("Identificador no válido")
         .isLength({min: 36, max: 36}).withMessage("Identificador no válido"),
@@ -75,7 +75,7 @@ router.get('/search/pdf/:id',[
 
 
 router.get('/search/data/report',[
-    //validarJWT,
+    validarJWT,
     query('fecha')
     .exists().withMessage("La fecha es obligatoria")
     .isDate().withMessage("La fecha debe tener el formato AAAA/MM/DD"),
