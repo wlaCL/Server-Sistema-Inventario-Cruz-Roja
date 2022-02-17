@@ -75,7 +75,7 @@ router.get('/search/pdf/:id',[
 
 
 router.get('/search/data/report',[
-    validarJWT,
+    //validarJWT,
     query('fecha')
     .exists().withMessage("La fecha es obligatoria")
     .isDate().withMessage("La fecha debe tener el formato AAAA/MM/DD"),
