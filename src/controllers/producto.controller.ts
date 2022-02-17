@@ -189,7 +189,10 @@ export const getProductoTodos = async(req: Request, res: Response)=>{
                     model: Categoria,
                     attributes:['nombre', 'descripcion'], 
                     where:{
-                        estado: true
+                        estado: true, 
+                        nombre:{
+                            [Op.not]: 'Varios'
+                        }
                     },                    
                 },
 

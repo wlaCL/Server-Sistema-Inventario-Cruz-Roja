@@ -81,8 +81,6 @@ router.delete('/:id',[
 ] ,deleteProducto);
 
 
-
-
 //Todo usar en el app pasra la consulta 
 //consultar todos los productos por nombre
 router.get('/busqueda/:termino',[

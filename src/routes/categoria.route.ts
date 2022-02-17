@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getCategorias, getCategoria, postCategoria, deleteCategoria, putCategoria } from '../controllers/categoria.controller';
+import { getCategorias, getCategoria, postCategoria, deleteCategoria, putCategoria, getCategoriasWeb } from '../controllers/categoria.controller';
 import { check } from 'express-validator';
 import { validarCampos} from '../middlewares/validar_campos';
 import { existeCategoriaNombre, existeCategoriaID } from '../db/categoria_validators.db';
@@ -65,6 +65,11 @@ router.put('/:id', [
     CamposValidosBody
 ], putCategoria)
 
+router.get('/busqueda/categorias/web',
+    [validarJWT, 
+        validarCampos,
+    ],
+getCategoriasWeb)
 
 
 export default router; 

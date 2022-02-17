@@ -1,4 +1,4 @@
-import { Request, Response, urlencoded } from 'express'; 
+import { Request, Response, urlencoded, response } from 'express'; 
 import { Op, where } from 'sequelize';
 
 import GenericError from '../models/errors/error';
@@ -11,7 +11,7 @@ export const getCategorias = async(req:Request, res: Response) => {
         const categorias  = await Categoria.findAndCountAll({
             attributes:{exclude:['estado']},
             where:{
-                estado:true
+                estado:true, 
             }, 
             limit: Number(fin), 
             offset: Number(inicio)
@@ -37,6 +37,44 @@ export const getCategorias = async(req:Request, res: Response) => {
             msg: "Ha ocurrido un error contáctate con el administrador",
         });
     }     
+}
+
+export const getCategoriasWeb = async(req:Request, res: Response)=>{
+    const {inicio = 0, fin = 3} = req.query; 
+    try{        
+        const categorias  = await Categoria.findAndCountAll({
+            attributes:{exclude:['estado']},
+            where:{
+                estado:true, 
+                nombre:{
+                    [Op.not]: 'Varios'
+                }
+            }, 
+            limit: Number(fin), 
+            offset: Number(inicio)
+        });
+
+        if(!categorias){
+            return res.status(404).json({
+                ok: false, 
+                msg: "No se han encontrado registros"             
+            });
+        }
+
+        return res.status(200).json({
+            msg: 'Resultados exitosos',
+            categorias:categorias.rows,
+            registros: categorias.count,             
+        });
+
+    } catch(error){
+        console.log(error); 
+        res.status(500).json({
+            ok: false, 
+            msg: "Ha ocurrido un error contáctate con el administrador",
+        });
+    }     
+
 }
 //buscar una categoria 
 export const getCategoria = async(req: Request, res:Response)=>{

@@ -246,17 +246,21 @@ exports.deleteProducto = deleteProducto;
 //obtener todos los productos
 var getProductoTodos = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var resultado, error_5;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
+                _b.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, producto_associations_1.TProducto.findAndCountAll({
                         include: [
                             {
                                 model: producto_associations_1.Categoria,
                                 attributes: ['nombre', 'descripcion'],
                                 where: {
-                                    estado: true
+                                    estado: true,
+                                    nombre: (_a = {},
+                                        _a[sequelize_1.Op.not] = 'Varios',
+                                        _a)
                                 },
                             },
                             {
@@ -268,7 +272,7 @@ var getProductoTodos = function (req, res) { return __awaiter(void 0, void 0, vo
                         }
                     })];
             case 1:
-                resultado = _a.sent();
+                resultado = _b.sent();
                 if (resultado.rows == 0) {
                     return [2 /*return*/, res.status(404).json({
                             ok: false,
@@ -283,7 +287,7 @@ var getProductoTodos = function (req, res) { return __awaiter(void 0, void 0, vo
                 });
                 return [3 /*break*/, 3];
             case 2:
-                error_5 = _a.sent();
+                error_5 = _b.sent();
                 console.log(error_5);
                 res.status(500).json({
                     msg: "Ha ocurrido un error contácte con el administrador"

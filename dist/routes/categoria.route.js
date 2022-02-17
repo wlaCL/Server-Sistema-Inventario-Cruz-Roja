@@ -59,5 +59,8 @@ router.put('/:id', [
     validar_campos_1.validarCampos,
     validar_campos_categoria_1.CamposValidosBody
 ], categoria_controller_1.putCategoria);
+router.get('/busqueda/categorias/web', [validar_jwt_middleware_1.validarJWT,
+    validar_campos_1.validarCampos,
+], categoria_controller_1.getCategoriasWeb);
 exports.default = router;
 //# sourceMappingURL=categoria.route.js.map
