@@ -8,6 +8,10 @@ import Persona from '../models/persona.model';
 import axios from 'axios';
 import { Op } from 'sequelize';
 import Registro_Producto from '../models/registro_producto';
+import dotenv from 'dotenv';
+
+
+dotenv.config({path:'../env'})
 
 
 export const postReporte = async(req:Request, res:Response)=>{
@@ -59,8 +63,9 @@ export const postReporte = async(req:Request, res:Response)=>{
 
 
 export const putReporte  = async (req:Request, res:Response) =>{
+
     const {novedades="", base="", asistente="", conductor="", id=""} = req.body;
-    const api = 'key=AAAA29qNbZc:APA91bEEX9oibqT5-n5wyxl8_OxleGEiPEx2BQ6Be_IeyVjPNoNlqT0cuc1R2ImoLZPKY09IjJ-uswDOZGeCA5dxjmCfWQsHd27I2z0lhCsVRjYOy7MOs7Y7JXHi3SamhkqrdGPmCgiW';
+    //const api = 'key=AAAA29qNbZc:APA91bEEX9oibqT5-n5wyxl8_OxleGEiPEx2BQ6Be_IeyVjPNoNlqT0cuc1R2ImoLZPKY09IjJ-uswDOZGeCA5dxjmCfWQsHd27I2z0lhCsVRjYOy7MOs7Y7JXHi3SamhkqrdGPmCgiW';
 
     try{
         const devices:any = [];
@@ -139,7 +144,7 @@ export const putReporte  = async (req:Request, res:Response) =>{
                 },
                 headers: {
                     //'Content-Type': 'application/json'
-                  Authorization: api
+                  Authorization: `${process.env.API}`
                 }
               })
             

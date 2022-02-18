@@ -1,5 +1,5 @@
 import { Request, Response} from 'express';
-import {Op, where } from 'sequelize';
+import {Op} from 'sequelize';
 import { TProducto, Unidad_Medida, Producto, Categoria, Producto_Ambulancia} from '../associations/producto.associations';
 import GenericError from '../models/errors/error';
 
