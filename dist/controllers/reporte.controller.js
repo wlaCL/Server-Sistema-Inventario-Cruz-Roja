@@ -106,11 +106,12 @@ var postReporte = function (req, res) { return __awaiter(void 0, void 0, void 0,
 }); };
 exports.postReporte = postReporte;
 var putReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, novedades, _c, base, _d, asistente, _e, conductor, _f, id, devices, report, reporte, userNotifieresReport, index, element, re, index, element, error_2;
+    var _a, _b, novedades, _c, base, _d, asistente, _e, conductor, _f, id, api, devices, report, reporte, userNotifieresReport, index, element, re, index, element, error_2;
     return __generator(this, function (_g) {
         switch (_g.label) {
             case 0:
                 _a = req.body, _b = _a.novedades, novedades = _b === void 0 ? "" : _b, _c = _a.base, base = _c === void 0 ? "" : _c, _d = _a.asistente, asistente = _d === void 0 ? "" : _d, _e = _a.conductor, conductor = _e === void 0 ? "" : _e, _f = _a.id, id = _f === void 0 ? "" : _f;
+                api = 'key=AAAA29qNbZc:APA91bEEX9oibqT5-n5wyxl8_OxleGEiPEx2BQ6Be_IeyVjPNoNlqT0cuc1R2ImoLZPKY09IjJ-uswDOZGeCA5dxjmCfWQsHd27I2z0lhCsVRjYOy7MOs7Y7JXHi3SamhkqrdGPmCgiW';
                 _g.label = 1;
             case 1:
                 _g.trys.push([1, 10, , 11]);
@@ -185,7 +186,7 @@ var putReporte = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                         },
                         headers: {
                             //'Content-Type': 'application/json'
-                            Authorization: "" + process.env.API
+                            Authorization: api
                         }
                     })];
             case 7:
