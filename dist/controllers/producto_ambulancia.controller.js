@@ -202,13 +202,14 @@ var getProductosAmbulanciaNombre = function (req, res) { return __awaiter(void 0
 exports.getProductosAmbulanciaNombre = getProductosAmbulanciaNombre;
 var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b, placa, _c, id, data, error_4;
-    return __generator(this, function (_d) {
-        switch (_d.label) {
+    var _d;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
             case 0:
                 _a = req.params, _b = _a.placa, placa = _b === void 0 ? "" : _b, _c = _a.id, id = _c === void 0 ? "" : _c;
-                _d.label = 1;
+                _e.label = 1;
             case 1:
-                _d.trys.push([1, 3, , 4]);
+                _e.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, producto_associations_1.TProducto.findAll({
                         include: [
                             {
@@ -216,6 +217,9 @@ var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, vo
                                 attributes: ['nombre'],
                                 where: {
                                     estado: true,
+                                    nombre: (_d = {},
+                                        _d[sequelize_1.Op.not] = "Varios",
+                                        _d)
                                 }
                             },
                             {
@@ -241,7 +245,7 @@ var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, vo
                         }
                     })];
             case 2:
-                data = _d.sent();
+                data = _e.sent();
                 console.log("me ejecute hasta el final");
                 console.log(data);
                 if (data.length == 0) {
@@ -257,7 +261,7 @@ var getProductosAmbulanciaID = function (req, res) { return __awaiter(void 0, vo
                 });
                 return [3 /*break*/, 4];
             case 3:
-                error_4 = _d.sent();
+                error_4 = _e.sent();
                 console.log(error_4);
                 res.status(500).json({
                     errors: {

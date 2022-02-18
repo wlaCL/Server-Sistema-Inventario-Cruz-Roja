@@ -17,7 +17,6 @@ export const validarJWT = async(req:Request, res:Response, next:NextFunction)=> 
    
 
     try{
-        console.log('1');
         let id: any; 
 
         try{

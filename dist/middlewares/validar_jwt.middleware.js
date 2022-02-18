@@ -59,7 +59,6 @@ var validarJWT = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                console.log('1');
                 id = void 0;
                 try {
                     id = jsonwebtoken_1.default.verify(token, 'q7497437_U&#UEOUEW@$%');

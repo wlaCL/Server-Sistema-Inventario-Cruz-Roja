@@ -149,6 +149,9 @@ export const getProductosAmbulanciaID= async (req:Request, res: Response)=>{
                     attributes:['nombre'], 
                     where:{
                         estado:true, 
+                        nombre:{
+                            [Op.not]: "Varios"
+                        }
                     }
                 },
                {
